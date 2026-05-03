@@ -1,0 +1,38 @@
+{
+  "folders": [
+    {
+      "name": "🌿 Smart Rehab (Racine)",
+      "path": "."
+    },
+    {
+      "name": "🐍 Backend (Flask + MySQL)",
+      "path": "backend"
+    },
+    {
+      "name": "⚛️ Frontend (React + Vite)",
+      "path": "frontend"
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.fontSize": 14,
+    "editor.tabSize": 2,
+    "editor.wordWrap": "on",
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/*.pyc": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "dsznajder.es7-react-js-snippets",
+      "esbenp.prettier-vscode",
+      "mtxr.sqltools",
+      "formulahendry.auto-rename-tag"
+    ]
+  }
+}

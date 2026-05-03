@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Rehab & Green Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--forest:#1B4332;--mid:#2D6A4F;--leaf:#40916C;--mint:#74C69D;--gold:#B7935F;--dark:#0A1F14;--cream:#F8F6F0;--white:#fff;--muted:#6B7B6E;--text:#2C3E30;--border:rgba(27,67,50,0.1)}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:#fff;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.au{animation:fadeUp .45s ease both}
+.ai{animation:fadeIn .3s ease both}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}.d4{animation-delay:.32s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(10,31,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(116,198,157,.1)}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{width:38px;height:38px;border-radius:50%;background:var(--leaf);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-txt{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;line-height:1.2}
+.logo-txt span{color:var(--mint);font-style:italic;font-weight:400}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-link{font-size:13px;color:rgba(255,255,255,.6);background:none;border:none;padding:7px 14px;cursor:pointer;transition:color .2s;border-radius:8px}
+.nav-link:hover{color:var(--mint)}
+.nav-link.active-link{color:var(--mint);background:rgba(116,198,157,.08)}
+.btn-nav{padding:9px 20px;border-radius:100px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:filter .2s}
+.btn-nav:hover{filter:brightness(.9)}
+.btn-green{background:var(--leaf);color:#fff}
+.btn-out{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2)!important;border:none}
+
+/* DASHBOARD LAYOUT */
+.app-layout{display:flex;min-height:100vh;padding-top:0}
+.sidebar{width:220px;min-height:100vh;background:var(--dark);border-right:1px solid rgba(116,198,157,.1);display:flex;flex-direction:column;position:fixed;top:0;left:0;padding-top:66px;z-index:100}
+.main-content{margin-left:220px;flex:1;background:var(--cream);min-height:100vh;padding-top:66px}
+.sidebar-link{display:flex;align-items:center;gap:9px;padding:9px 14px;margin:1px 10px;border-radius:10px;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left}
+.sidebar-link:hover{background:rgba(255,255,255,.06);color:#fff}
+.sidebar-link.active{background:var(--mid);color:#fff;font-weight:600}
+.sidebar-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.sidebar-user{margin:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(116,198,157,.1)}
+.sidebar-user-name{font-size:12px;color:#fff;font-weight:500}
+.sidebar-user-role{font-size:10px;color:rgba(255,255,255,.4)}
+.logout-btn{font-size:11px;color:var(--mint);background:none;border:none;cursor:pointer;padding:0;margin-top:6px}
+.badge-notif{display:inline-flex;align-items:center;justify-content:center;background:#EF4444;color:#fff;border-radius:8px;font-size:9px;font-weight:700;min-width:14px;height:14px;padding:0 3px;margin-left:auto}
+
+/* CONTENT */
+.content-area{padding:28px 32px;max-width:1280px}
+
+/* CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.05);padding:20px}
+.kpi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.kpi-value{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;line-height:1}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+.card-title{font-size:13px;font-weight:600;color:var(--forest)}
+.card-body{padding:20px}
+.page-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--forest);margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+
+/* TABLE */
+.table-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.05)}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--forest)}
+thead th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.75);white-space:nowrap}
+tbody tr{background:#fff;border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer}
+tbody tr:hover{background:rgba(27,67,50,.02)}
+tbody td{padding:11px 16px;font-size:13px;color:var(--text)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.badge-actif{background:#D1FAE5;color:#065F46}
+.badge-sorti{background:#DBEAFE;color:#1E40AF}
+.badge-suspendu{background:#FEF3C7;color:#92400E}
+.badge-planifiee{background:#FEF3C7;color:#92400E}
+.badge-realisee{background:#D1FAE5;color:#065F46}
+.badge-high{background:#FEE2E2;color:#991B1B}
+.badge-medium{background:#FEF3C7;color:#92400E}
+.badge-en_attente{background:#FEF3C7;color:#92400E}
+.badge-approuve{background:#D1FAE5;color:#065F46}
+.badge-refuse{background:#FEE2E2;color:#991B1B}
+
+/* FORMS */
+.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.flbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.finp{width:100%;padding:9px 13px;border-radius:10px;border:1.5px solid rgba(27,67,50,.18);background:#FAFAF8;font-size:13px;color:var(--text);outline:none;transition:border-color .15s}
+.finp:focus{border-color:var(--leaf)}
+.btn-primary{padding:9px 18px;border-radius:10px;background:var(--leaf);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:filter .15s}
+.btn-primary:hover{filter:brightness(.9)}
+.btn-outline{padding:8px 16px;border-radius:10px;background:transparent;color:var(--forest);border:1.5px solid rgba(27,67,50,.25);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-outline:hover{background:rgba(27,67,50,.05)}
+.btn-danger{padding:7px 12px;border-radius:8px;background:#FEE2E2;color:#991B1B;border:1px solid #FECACA;font-size:12px;font-weight:600;cursor:pointer}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:7px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,31,20,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:#fff;border-radius:18px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2)}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:20px}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+
+/* PROGRESS */
+.prog-bar{display:flex;align-items:center;gap:8px}
+.prog-track{flex:1;height:6px;border-radius:3px;background:rgba(27,67,50,.1);overflow:hidden;min-width:50px}
+.prog-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.prog-label{font-size:11px;color:var(--muted);min-width:30px;text-align:right}
+
+/* ALERT BANNER */
+.alert-banner{padding:12px 16px;border-radius:12px;background:#FEF3C7;border:1px solid #F59E0B;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.alert-err-box{padding:9px 12px;border-radius:8px;background:#FEE2E2;color:#991B1B;font-size:12px;margin-bottom:10px}
+.alert-ok-box{padding:9px 12px;border-radius:8px;background:#D1FAE5;color:#065F46;font-size:12px;margin-bottom:10px}
+
+/* RING */
+.ring-wrap{display:flex;align-items:center;gap:20px}
+
+/* PUBLIC PAGES */
+.pub-hero{min-height:100vh;display:flex;align-items:center;padding:100px 48px 80px;position:relative;overflow:hidden;background:var(--dark)}
+.pub-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 20%,rgba(45,106,79,.3),transparent 60%),radial-gradient(ellipse 50% 50% at 10% 80%,rgba(27,67,50,.4),transparent 60%)}
+.pub-hero-content{position:relative;z-index:2;max-width:650px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.3);color:var(--mint);padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px}
+.hero-h1{font-family:'Playfair Display',serif;font-size:clamp(38px,7vw,68px);font-weight:900;line-height:1.05;margin-bottom:18px}
+.hero-h1 em{font-style:italic;color:var(--mint);display:block}
+.hero-p{font-size:16px;color:rgba(255,255,255,.6);line-height:1.8;max-width:520px;margin-bottom:36px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-hero-g{padding:14px 32px;border-radius:100px;background:var(--leaf);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 24px rgba(64,145,108,.4);transition:all .25s}
+.btn-hero-g:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(64,145,108,.45)}
+.btn-hero-o{padding:14px 32px;border-radius:100px;background:transparent;color:#fff;font-size:15px;font-weight:500;border:1px solid rgba(255,255,255,.25);cursor:pointer;transition:all .2s}
+.btn-hero-o:hover{border-color:var(--mint);color:var(--mint)}
+.stats-bar{display:flex;gap:36px;margin-top:56px;flex-wrap:wrap}
+.stat-item{border-left:2px solid var(--leaf);padding-left:14px}
+.stat-n{font-family:'Playfair Display',serif;font-size:26px;font-weight:900}
+.stat-n span{color:var(--mint)}
+.stat-l{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.pub-section{padding:80px 48px}
+.pub-section-inner{max-width:1100px;margin:0 auto}
+.stag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.stitle{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.2;margin-bottom:14px}
+.ssub{font-size:15px;color:rgba(255,255,255,.55);line-height:1.8;max-width:560px;margin-bottom:44px}
+.pub-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pub-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:26px;transition:all .3s}
+.pub-card:hover{background:rgba(116,198,157,.07);border-color:rgba(116,198,157,.25);transform:translateY(-4px)}
+.pub-card-icon{width:52px;height:52px;border-radius:14px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.15);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.pub-card h3{font-family:'Playfair Display',serif;font-size:17px;color:#fff;margin-bottom:8px}
+.pub-card p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.8}
+.pillar-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.pillar{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+.pillar:hover{transform:translateY(-5px);transition:transform .3s}
+.pt{padding:26px;color:#fff}
+.pt1{background:linear-gradient(135deg,#1B4332,#2D6A4F)}
+.pt2{background:linear-gradient(135deg,#40916C,#52B788)}
+.pt3{background:linear-gradient(135deg,#B7935F,#C4A57D)}
+.pt4{background:linear-gradient(135deg,#2D6A4F,#40916C)}
+.pt h3{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-top:8px}
+.pillar-body{padding:20px 24px;background:#fff}
+.pillar-body li{font-size:13px;color:#6B7B6E;padding:3px 0 3px 16px;position:relative;list-style:none;line-height:1.5}
+.pillar-body li::before{content:'→';position:absolute;left:0;color:var(--leaf);font-weight:700}
+.impact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.imp-card{text-align:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:34px 20px;transition:all .3s}
+.imp-card:hover{background:rgba(255,255,255,.11);transform:translateY(-4px)}
+.imp-n{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--mint);line-height:1}
+.imp-card h3{font-size:15px;color:#fff;margin:10px 0 6px;font-weight:600}
+.imp-card p{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.team-card{display:flex;gap:16px;padding:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px}
+.team-av{width:50px;height:50px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.team-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff}
+.team-role{font-size:11px;color:var(--mint);font-weight:600;margin:3px 0 5px}
+.team-bio{font-size:12px;color:rgba(255,255,255,.45);line-height:1.7}
+.cta-sec{background:#1B4332;text-align:center;padding:80px 40px}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex}
+.auth-left{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:52px;background:#1B4332}
+.auth-right{flex:0 0 500px;background:var(--dark);display:flex;align-items:center;justify-content:center;padding:48px 44px;overflow-y:auto}
+.auth-inner{width:100%;max-width:390px}
+.auth-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#fff;margin-bottom:6px}
+.auth-desc{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:28px}
+.auth-quote{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:14px}
+.demo-box{margin-top:20px;padding:14px;border-radius:12px;background:rgba(116,198,157,.07);border:1px solid rgba(116,198,157,.15)}
+.demo-title{font-size:11px;color:var(--mint);font-weight:700;margin-bottom:6px}
+.demo-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.45);margin-bottom:3px}
+.demo-row strong{color:var(--mint)}
+.auth-inp{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(116,198,157,.2);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;transition:border-color .2s,background .2s;margin-bottom:14px}
+.auth-inp:focus{border-color:var(--mint);background:rgba(116,198,157,.08)}
+.auth-inp::placeholder{color:rgba(255,255,255,.3)}
+.btn-submit{width:100%;padding:13px;border-radius:12px;border:none;background:var(--leaf);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:filter .2s;margin-top:4px}
+.btn-submit:hover{filter:brightness(.9)}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0}
+.auth-divider hr{flex:1;border:none;border-top:1px solid rgba(255,255,255,.1)}
+.auth-divider span{font-size:11px;color:rgba(255,255,255,.3)}
+.btn-sec-auth{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(116,198,157,.25);background:transparent;color:var(--mint);font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn-sec-auth:hover{background:rgba(116,198,157,.08)}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:36px}
+.ms{background:rgba(255,255,255,.07);border-radius:12px;padding:14px}
+.ms-n{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--mint)}
+.ms-l{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* SIGNUP WIZARD */
+.steps-bar{display:flex;align-items:center;gap:0;margin-bottom:28px}
+.sdot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .3s}
+.sline{flex:1;height:2px;margin:0 8px;transition:background .3s}
+.type-opt{display:flex;gap:14px;padding:18px 20px;border-radius:14px;border:2px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;text-align:left;width:100%;margin-bottom:12px;transition:all .2s}
+.type-opt:hover{border-color:var(--mint);background:rgba(116,198,157,.07)}
+.type-opt-icon{font-size:26px;flex-shrink:0}
+.type-opt-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.type-opt-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+.role-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;width:100%;margin-bottom:7px;transition:all .15s}
+.role-opt:hover,.role-opt.sel{border-color:var(--mint);background:rgba(116,198,157,.08)}
+.role-radio{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.role-radio.chk{border-color:var(--mint)}
+.rri{width:8px;height:8px;border-radius:50%;background:var(--mint)}
+.sit-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.sit-opt{padding:9px 11px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;font-size:12px;color:rgba(255,255,255,.5);text-align:left;transition:all .15s}
+.sit-opt:hover,.sit-opt.sel{border-color:var(--mint);background:rgba(116,198,157,.1);color:var(--mint);font-weight:600}
+.urg-row{display:flex;gap:10px;margin-bottom:12px}
+.urg-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);transition:all .15s}
+.urg-yes.sel{border-color:#EF4444;background:rgba(239,68,68,.12);color:#FCA5A5}
+.urg-no.sel{border-color:var(--leaf);background:rgba(64,145,108,.12);color:var(--mint)}
+.sum-box{background:rgba(255,255,255,.04);border:1px solid rgba(116,198,157,.15);border-radius:14px;padding:18px;margin-bottom:16px}
+.sum-hdr{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.sum-av{width:44px;height:44px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.sum-name{font-size:15px;font-weight:700;color:#fff}
+.sum-type{font-size:11px;color:var(--mint)}
+.sum-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px}
+.sum-row:last-child{border:none}
+.sum-k{color:rgba(255,255,255,.4)}
+.sum-v{color:rgba(255,255,255,.75);font-weight:500}
+.chk-lbl{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin-bottom:4px}
+.chk-lbl input{width:15px;height:15px;margin-top:2px;accent-color:var(--leaf);cursor:pointer;flex-shrink:0}
+.chk-txt{font-size:12px;color:rgba(255,255,255,.45);line-height:1.7}
+.nav-btns{display:flex;gap:10px;margin-top:22px}
+.btn-back{padding:11px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.55);font-size:13px;font-weight:600;cursor:pointer}
+.btn-next{flex:1;padding:11px;border-radius:12px;border:none;background:var(--leaf);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:filter .2s}
+.btn-next:hover{filter:brightness(.9)}
+.suc-icon{width:72px;height:72px;border-radius:50%;background:rgba(64,145,108,.15);border:2px solid var(--leaf);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px}
+
+/* INFO PAGE */
+.info-hero{padding:120px 48px 60px;max-width:900px;margin:0 auto;text-align:center}
+.info-stats{display:grid;grid-template-columns:repeat(4,1fr);border-radius:18px;overflow:hidden;border:1px solid rgba(116,198,157,.1)}
+.istat{padding:26px 16px;text-align:center;background:rgba(27,67,50,.4);border-right:1px solid rgba(116,198,157,.1)}
+.istat:last-child{border-right:none}
+.istat-n{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--mint)}
+.istat-l{font-size:12px;color:rgba(255,255,255,.4);margin-top:4px}
+.info-block{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-bottom:48px;padding:36px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:20px}
+.info-block.rev>:first-child{order:2}.info-block.rev>:last-child{order:1}
+.iblock-img{border-radius:14px;aspect-ratio:4/3;background:linear-gradient(135deg,#2D6A4F,#40916C);display:flex;align-items:center;justify-content:center;font-size:80px}
+.iblock h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:12px}
+.iblock p{font-size:14px;color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:10px}
+.feat-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.feat-dot{width:22px;height:22px;border-radius:6px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px}
+.feat-txt{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+.ci{display:flex;gap:12px;align-items:flex-start;padding:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px}
+.ci-icon{width:38px;height:38px;border-radius:10px;background:rgba(116,198,157,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ci-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-bottom:3px}
+.ci-val{font-size:13px;color:rgba(255,255,255,.65)}
+
+/* FOOTER */
+footer{padding:24px 48px;border-top:1px solid rgba(116,198,157,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:#060F09}
+.footer-brand{font-family:'Playfair Display',serif;font-size:14px;color:rgba(255,255,255,.35)}
+.footer-brand strong{color:var(--mint)}
+.footer-links{display:flex;gap:18px}
+.footer-links button{font-size:12px;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:color .2s}
+.footer-links button:hover{color:var(--mint)}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.2)}
+
+/* CHART BARS (pure CSS) */
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:160px;padding:0 4px}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bar{width:100%;border-radius:5px 5px 0 0;transition:height .6s ease;min-width:20px}
+.bar-label{font-size:10px;color:var(--muted);white-space:nowrap}
+
+@media(max-width:900px){
+  nav{padding:12px 20px}
+  .pub-hero{padding:90px 20px 60px}
+  .stats-bar{gap:20px}
+  .pub-section{padding:60px 20px}
+  .pub-card-grid,.pillar-grid,.impact-grid,.team-grid,.info-stats{grid-template-columns:1fr}
+  .auth-left{display:none}
+  .auth-right{flex:1;padding:40px 20px}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main-content{margin-left:0}
+  .sit-grid{grid-template-columns:1fr}
+  .info-block{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;padding:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ NAV PUBLIC -->
+<nav id="pub-nav">
+  <div class="logo" onclick="showPub('home')">
+    <div class="logo-icon">🌿</div>
+    <div class="logo-txt">Smart Rehab<br><span>&amp; Green Center</span></div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="showPub('home')">Accueil</button>
+    <button class="nav-link" onclick="showPub('info')">À propos</button>
+    <button class="nav-link" onclick="showPub('signup')">S'inscrire</button>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-nav btn-out" onclick="showPub('login')">Connexion</button>
+    <button class="btn-nav btn-green" onclick="showPub('signup')">Créer un compte</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════ PAGE ACCUEIL -->
+<div id="page-home" class="page active">
+  <section class="pub-hero">
+    <div class="pub-hero-bg"></div>
+    <div class="pub-hero-content">
+      <div class="hero-badge au">🌿 Innovation · Santé · Environnement</div>
+      <h1 class="hero-h1 au d1">Réhabiliter,<br>Former,<em>Renouveler.</em></h1>
+      <p class="hero-p au d2">Le premier centre tunisien de réhabilitation intelligent — soins médicaux, technologie IoT, formation professionnelle et espaces verts thérapeutiques.</p>
+      <div class="hero-btns au d3">
+        <button class="btn-hero-g" onclick="showPub('signup')">Faire une demande →</button>
+        <button class="btn-hero-o" onclick="showPub('info')">En savoir plus</button>
+      </div>
+      <div class="stats-bar au d4">
+        <div class="stat-item"><div class="stat-n">200<span>+</span></div><div class="stat-l">Bénéficiaires / an</div></div>
+        <div class="stat-item"><div class="stat-n">80<span>%</span></div><div class="stat-l">Taux réintégration</div></div>
+        <div class="stat-item"><div class="stat-n">4</div><div class="stat-l">Piliers de soin</div></div>
+        <div class="stat-item"><div class="stat-n">100<span>%</span></div><div class="stat-l">Engagement vert</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pub-section" style="background:#1B4332">
+    <div class="pub-section-inner">
+      <p class="stag">Le problème</p>
+      <h2 class="stitle">Un problème qui ne peut plus attendre</h2>
+      <p class="ssub">L'addiction chez les jeunes atteint des niveaux alarmants.</p>
+      <div class="pub-card-grid">
+        <div class="pub-card"><div class="pub-card-icon">📈</div><h3>Hausse de l'addiction</h3><p>+40% de cas chez les 15-35 ans en 5 ans. Cannabis, psychotropes et drogues de synthèse en forte progression.</p></div>
+        <div class="pub-card"><div class="pub-card-icon">🏥</div><h3>Manque de centres modernes</h3><p>Moins de 500 lits disponibles pour un besoin estimé à 5 000+ cas actifs. Infrastructures obsolètes.</p></div>
+        <div class="pub-card"><div class="pub-card-icon">🔄</div><h3>Absence de réintégration</h3><p>Taux de rechute &gt;70% faute d'un parcours de réinsertion structuré après la guérison médicale.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pub-section" style="background:#F8F6F0">
+    <div class="pub-section-inner">
+      <p class="stag" style="color:var(--gold)">Notre approche</p>
+      <h2 class="stitle" style="color:var(--forest)">Quatre piliers intégrés</h2>
+      <p class="ssub" style="color:var(--muted)">Chaque pilier est essentiel — ils fonctionnent ensemble pour une guérison durable.</p>
+      <div class="pillar-grid">
+        <div class="pillar"><div class="pt pt1"><span style="font-size:30px">💊</span><h3>Traitement & Thérapie</h3></div><div class="pillar-body"><ul><li>Évaluation et diagnostic individualisé</li><li>Thérapies cognitivo-comportementales</li><li>Groupes de parole 3x/semaine</li><li>Suivi psychiatrique et médication</li><li>Sessions familiales mensuelles</li></ul></div></div>
+        <div class="pillar"><div class="pt pt2"><span style="font-size:30px">🎓</span><h3>Formation Professionnelle</h3></div><div class="pillar-body"><ul><li>Numérique : bureautique, design, web</li><li>Artisanat : poterie, textile, couture</li><li>Entrepreneuriat social certifié</li><li>Stages et insertions entreprises</li><li>Partenariats 20+ employeurs</li></ul></div></div>
+        <div class="pillar"><div class="pt pt3"><span style="font-size:30px">💪</span><h3>Sport & Bien-être</h3></div><div class="pillar-body"><ul><li>Salle fitness avec coach dédié</li><li>Yoga et méditation quotidienne</li><li>Sports collectifs (foot, basket)</li><li>Suivi de la progression personnalisé</li><li>Programme adapté à chaque profil</li></ul></div></div>
+        <div class="pillar"><div class="pt pt4"><span style="font-size:30px">🌿</span><h3>Espace Écologique</h3></div><div class="pillar-body"><ul><li>Jardinage thérapeutique collectif</li><li>Potager, compostage, biodiversité</li><li>Ateliers environnement & nature</li><li>Parcours zen et bien-être naturel</li><li>Énergie solaire 100% renouvelable</li></ul></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pub-section" style="background:linear-gradient(135deg,#1B4332,#2D6A4F)">
+    <div class="pub-section-inner">
+      <p class="stag" style="color:rgba(255,255,255,.5)">Notre engagement</p>
+      <h2 class="stitle">Un impact concret</h2>
+      <div class="impact-grid">
+        <div class="imp-card"><div class="imp-n">60%</div><h3>Réduction de l'addiction</h3><p>Objectif sur 3 ans grâce aux protocoles thérapeutiques intégrés et au suivi IoT.</p></div>
+        <div class="imp-card"><div class="imp-n">80%</div><h3>Taux de réintégration</h3><p>Insertion professionnelle et sociale durable grâce aux formations et partenariats.</p></div>
+        <div class="imp-card"><div class="imp-n">100%</div><h3>Impact environnemental</h3><p>Centre certifié vert — énergie renouvelable, zéro déchet, 200+ arbres plantés.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pub-section" style="background:var(--dark)">
+    <div class="pub-section-inner">
+      <p class="stag">L'équipe</p>
+      <h2 class="stitle">Des professionnels engagés</h2>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-av">🩺</div><div><div class="team-name">Dr. Sami Khelil</div><div class="team-role">Médecin psychiatre</div><div class="team-bio">Spécialiste en addictologie, 15 ans d'expérience. Diplômé de la faculté de médecine de Tunis.</div></div></div>
+        <div class="team-card"><div class="team-av">🧠</div><div><div class="team-name">Mme. Ines Trabelsi</div><div class="team-role">Psychologue clinicienne</div><div class="team-bio">Thérapeute en TCC et thérapies motivationnelles. 10 ans de pratique clinique.</div></div></div>
+        <div class="team-card"><div class="team-av">💪</div><div><div class="team-name">Coach Maher Salem</div><div class="team-role">Coach sportif thérapeutique</div><div class="team-bio">Certifié sport-santé et réhabilitation physique. Expert en programmes adaptés.</div></div></div>
+        <div class="team-card"><div class="team-av">🎓</div><div><div class="team-name">M. Yassine Bouzid</div><div class="team-role">Responsable formations</div><div class="team-bio">Ingénieur en formation professionnelle. 20+ partenariats avec entreprises régionales.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-sec">
+    <p class="stag" style="color:var(--gold)">Rejoignez-nous</p>
+    <h2 class="stitle" style="color:#fff">Prêt à commencer ?</h2>
+    <p style="color:rgba(255,255,255,.6);font-size:15px;max-width:480px;margin:0 auto 36px;line-height:1.8">Que vous cherchiez de l'aide ou souhaitiez rejoindre notre équipe, nous sommes là.</p>
+    <div class="cta-btns">
+      <button class="btn-hero-g" onclick="showPub('signup')">Créer un compte →</button>
+      <button class="btn-hero-o" onclick="showPub('info')">En savoir plus</button>
+      <button class="btn-hero-o" onclick="showPub('login')">Accès professionnel</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-brand"><strong>Smart Rehab</strong> &amp; Green Center</div>
+    <div class="footer-links"><button onclick="showPub('home')">Accueil</button><button onclick="showPub('info')">À propos</button><button onclick="showPub('signup')">S'inscrire</button><button onclick="showPub('login')">Connexion</button></div>
+    <div class="footer-copy">© 2025 Smart Rehab &amp; Green Center. Tunisie.</div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════ PAGE À PROPOS / INFO -->
+<div id="page-info" class="page">
+  <div class="info-hero">
+    <p class="stag">Tout savoir</p>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,54px);font-weight:900;line-height:1.1;margin-bottom:18px">Smart Rehab<br><span style="color:var(--mint)">&amp; Green Center</span></h1>
+    <p style="font-size:16px;color:rgba(255,255,255,.55);line-height:1.85;max-width:620px;margin:0 auto 36px">Centre innovant de réhabilitation combinant soins médicaux, technologie IoT, formation professionnelle et environnement.</p>
+    <div class="info-stats">
+      <div class="istat"><div class="istat-n">200+</div><div class="istat-l">Bénéficiaires / an</div></div>
+      <div class="istat"><div class="istat-n">80%</div><div class="istat-l">Réintégration</div></div>
+      <div class="istat"><div class="istat-n">4</div><div class="istat-l">Piliers de soin</div></div>
+      <div class="istat"><div class="istat-n">100%</div><div class="istat-l">Vert &amp; durable</div></div>
+    </div>
+  </div>
+  <div style="max-width:960px;margin:0 auto;padding:0 48px 80px">
+    <div class="info-block">
+      <div>
+        <p class="stag">À propos</p>
+        <h2 class="iblock">Une vision holistique de la réhabilitation</h2>
+        <p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:10px">Le Smart Rehab &amp; Green Center est né d'un constat simple : traiter l'addiction de manière isolée ne suffit pas. Il faut accompagner le jeune vers une réinsertion complète.</p>
+        <div>
+          <div class="feat-item"><div class="feat-dot">🎯</div><div class="feat-txt"><strong style="color:#fff">Vision</strong> — Devenir le centre de référence au Maghreb pour la réhabilitation innovante.</div></div>
+          <div class="feat-item"><div class="feat-dot">💚</div><div class="feat-txt"><strong style="color:#fff">Mission</strong> — Offrir un parcours médical, psychologique, sportif et écologique intégré.</div></div>
+          <div class="feat-item"><div class="feat-dot">⭐</div><div class="feat-txt"><strong style="color:#fff">Valeurs</strong> — Dignité, bienveillance, innovation, durabilité, réinsertion.</div></div>
+        </div>
+      </div>
+      <div class="iblock-img">🌿</div>
+    </div>
+    <div style="margin-bottom:48px;padding:36px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:20px">
+      <p class="stag">Notre emplacement</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:6px">Nous trouver</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:20px">Situé en Tunisie, notre centre est facilement accessible. Venez nous rendre visite ou prenez rendez-vous par téléphone.</p>
+      <!-- Google Maps Embed — Tunisie -->
+      <div style="border-radius:16px;overflow:hidden;border:2px solid rgba(116,198,157,.15);box-shadow:0 8px 32px rgba(0,0,0,.3)">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3000.0!2d10.4673!3d35.9548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1700000000000!5m2!1sfr!2stn"
+          width="100%"
+          height="380"
+          style="border:0;display:block"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(116,198,157,.08);border:1px solid rgba(116,198,157,.15);border-radius:10px">
+          <span style="font-size:16px">📍</span>
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint)">Adresse</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.7)">Sousse, Tunisie (35.9548, 10.4673)</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(116,198,157,.08);border:1px solid rgba(116,198,157,.15);border-radius:10px">
+          <span style="font-size:16px">🚗</span>
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint)">Accès</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.7)">Parking gratuit disponible</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(116,198,157,.08);border:1px solid rgba(116,198,157,.15);border-radius:10px">
+          <span style="font-size:16px">🕐</span>
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint)">Horaires</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.7)">Lun–Ven, 8h00–17h00</div>
+          </div>
+        </div>
+        <a href="https://www.google.com/maps?q=35.9548,10.4673" target="_blank"
+          style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--leaf);border-radius:10px;text-decoration:none;margin-left:auto">
+          <span style="font-size:13px;font-weight:600;color:#fff">Ouvrir dans Maps →</span>
+        </a>
+      </div>
+    </div>
+    <div>
+      <p class="stag">Contact</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:8px">Nous contacter</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.8">Notre équipe est disponible du lundi au vendredi de 8h à 17h.</p>
+      <div class="contact-grid">
+        <div class="ci"><div class="ci-icon">✉️</div><div><div class="ci-label">Email</div><div class="ci-val">contact@smartrehabgreen.tn</div></div></div>
+        <div class="ci"><div class="ci-icon">📞</div><div><div class="ci-label">Téléphone</div><div class="ci-val">+216 71 XXX XXX</div></div></div>
+        <div class="ci"><div class="ci-icon">📍</div><div><div class="ci-label">Adresse</div><div class="ci-val">Tunisie — Région à définir</div></div></div>
+        <div class="ci"><div class="ci-icon">🕐</div><div><div class="ci-label">Horaires</div><div class="ci-val">Lun – Ven, 8h00 – 17h00</div></div></div>
+      </div>
+      <div style="margin-top:28px;text-align:center">
+        <button class="btn-hero-g" onclick="showPub('signup')">Faire une demande →</button>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-brand"><strong>Smart Rehab</strong> &amp; Green Center</div>
+    <div class="footer-links"><button onclick="showPub('home')">Accueil</button><button onclick="showPub('info')">À propos</button><button onclick="showPub('signup')">S'inscrire</button><button onclick="showPub('login')">Connexion</button></div>
+    <div class="footer-copy">© 2025 Smart Rehab &amp; Green Center.</div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════ PAGE LOGIN -->
+<div id="page-login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div>
+        <div class="logo" style="margin-bottom:44px" onclick="showPub('home')">
+          <div class="logo-icon">🌿</div>
+          <div class="logo-txt">Smart Rehab<br><span>&amp; Green Center</span></div>
+        </div>
+        <div class="auth-quote">"Chaque jeune mérite une nouvelle chance."</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.45);margin-top:12px;margin-bottom:36px">Accès réservé au personnel autorisé du centre.</p>
+      </div>
+      <div class="mini-stats">
+        <div class="ms"><div class="ms-n">200+</div><div class="ms-l">Bénéficiaires</div></div>
+        <div class="ms"><div class="ms-n">80%</div><div class="ms-l">Réintégration</div></div>
+        <div class="ms"><div class="ms-n">4</div><div class="ms-l">Piliers</div></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-inner" id="login-inner">
+        <h2 class="auth-title">Connexion</h2>
+        <p class="auth-desc">Accédez à votre espace professionnel</p>
+        <div id="login-err" class="alert-err-box" style="display:none"></div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mint);display:block;margin-bottom:5px">Email</label>
+        <input id="l-email" class="auth-inp" type="email" placeholder="vous@smartrehab.tn">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mint);display:block;margin-bottom:5px">Mot de passe</label>
+        <input id="l-pw" class="auth-inp" type="password" placeholder="••••••••">
+        <button class="btn-submit" onclick="doLogin()">Se connecter →</button>
+        <div class="auth-divider"><hr><span>ou</span><hr></div>
+        <button class="btn-sec-auth" onclick="showPub('signup')">Créer un compte / S'inscrire</button>
+        <div class="demo-box">
+          <div class="demo-title">Comptes de démonstration</div>
+          <div class="demo-row">admin@smartrehab.tn <strong>admin123</strong></div>
+          <div class="demo-row">khelil@smartrehab.tn <strong>medecin123</strong></div>
+          <div class="demo-row">trabelsi@smartrehab.tn <strong>psych123</strong></div>
+          <div class="demo-row">bouzid@smartrehab.tn <strong>form123</strong></div>
+          <div class="demo-row">salem@smartrehab.tn <strong>coach123</strong></div>
+        </div>
+        <p style="margin-top:14px;text-align:center;font-size:12px;color:rgba(255,255,255,.25)">
+          <button onclick="showPub('info')" style="background:none;border:none;color:rgba(116,198,157,.45);font-size:12px;cursor:pointer">En savoir plus sur le centre</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ PAGE SIGNUP -->
+<div id="page-signup" class="page">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div>
+        <div class="logo" style="margin-bottom:44px;cursor:pointer" onclick="showPub('home')">
+          <div class="logo-icon">🌿</div>
+          <div class="logo-txt">Smart Rehab<br><span>&amp; Green Center</span></div>
+        </div>
+        <div class="auth-quote">Votre nouvelle vie <span style="color:var(--mint)">commence ici.</span></div>
+        <p style="font-size:13px;color:rgba(255,255,255,.45);margin-top:12px;margin-bottom:32px">Faites votre demande d'admission en 3 étapes simples.</p>
+        <div>
+          <div class="feat-item"><div class="feat-dot">🩺</div><div class="feat-txt">Équipe médicale pluridisciplinaire</div></div>
+          <div class="feat-item"><div class="feat-dot">🔒</div><div class="feat-txt">Confidentialité garantie</div></div>
+          <div class="feat-item"><div class="feat-dot">💚</div><div class="feat-txt">Accompagnement personnalisé</div></div>
+          <div class="feat-item"><div class="feat-dot">🌿</div><div class="feat-txt">Espace vert thérapeutique</div></div>
+          <div class="feat-item"><div class="feat-dot">⏱️</div><div class="feat-txt">Réponse sous 48 heures</div></div>
+        </div>
+      </div>
+      <button onclick="showPub('info')" style="background:none;border:none;color:rgba(116,198,157,.4);font-size:12px;cursor:pointer;text-align:left">En savoir plus →</button>
+    </div>
+    <div class="auth-right" style="align-items:flex-start;padding-top:60px;overflow-y:auto">
+      <div class="auth-inner" id="signup-inner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ APP DASHBOARD -->
+<div id="page-app" class="page">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div style="padding:16px 10px 10px">
+        <div class="logo" style="padding:0 4px;margin-bottom:14px">
+          <div class="logo-icon" style="width:32px;height:32px;font-size:14px">🌿</div>
+          <div class="logo-txt" style="font-size:12px">Smart Rehab<br><span style="font-size:10px">&amp; Green Center</span></div>
+        </div>
+        <div id="sidebar-nav"></div>
+      </div>
+      <div style="margin-top:auto">
+        <div class="sidebar-user" id="sidebar-user"></div>
+      </div>
+    </div>
+    <!-- Main -->
+    <div class="main-content">
+      <div id="app-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA STORE — simulated database
+═══════════════════════════════════════════════════════════ */
+const DB = {
+  currentUser: null,
+  users: [
+    {id:1,email:'admin@smartrehab.tn',     pw:'admin123',   name:'Admin Centre',       role:'admin'},
+    {id:2,email:'khelil@smartrehab.tn',    pw:'medecin123', name:'Dr. Sami Khelil',    role:'medecin'},
+    {id:3,email:'trabelsi@smartrehab.tn',  pw:'psych123',   name:'Mme. Ines Trabelsi', role:'psychologue'},
+    {id:4,email:'bouzid@smartrehab.tn',    pw:'form123',    name:'M. Yassine Bouzid',  role:'formateur'},
+    {id:5,email:'salem@smartrehab.tn',     pw:'coach123',   name:'Coach Maher Salem',  role:'coach'},
+    {id:6,email:'sfaxi@smartrehab.tn',     pw:'infirm123',  name:'Mme. Fatma Sfaxi',   role:'infirmier'},
+  ],
+  residents: [
+    {id:1,code:'RES-001',nom:'Bensalem',   prenom:'Ahmed',   age:24,status:'actif',   pilier:'therapie',  progress:68,diagnostic:'Cannabis modéré, anxiété sociale'},
+    {id:2,code:'RES-002',nom:'Mansouri',   prenom:'Sarra',   age:21,status:'actif',   pilier:'formation', progress:45,diagnostic:'Alcool, instabilité professionnelle'},
+    {id:3,code:'RES-003',nom:'Khelifi',    prenom:'Youssef', age:27,status:'actif',   pilier:'sport',     progress:82,diagnostic:'Polyconsommation, faible estime de soi'},
+    {id:4,code:'RES-004',nom:'Triki',      prenom:'Nour',    age:19,status:'suspendu',pilier:'therapie',  progress:30,diagnostic:'Cannabis sévère, rupture familiale'},
+    {id:5,code:'RES-005',nom:'Riahi',      prenom:'Amine',   age:26,status:'sorti',   pilier:'formation', progress:95,diagnostic:'Alcool, réinséré en entreprise'},
+    {id:6,code:'RES-006',nom:'Gharbi',     prenom:'Mariem',  age:23,status:'actif',   pilier:'ecologie',  progress:55,diagnostic:'Anxiété + dépendance benzodiazépines'},
+    {id:7,code:'RES-007',nom:'Azizi',      prenom:'Khalil',  age:31,status:'actif',   pilier:'therapie',  progress:40,diagnostic:'Héroïne, programme méthadone'},
+    {id:8,code:'RES-008',nom:'Elloumi',    prenom:'Fatma',   age:22,status:'actif',   pilier:'sport',     progress:73,diagnostic:'Cannabis + sédentarité'},
+    {id:9,code:'RES-009',nom:'Ben Amara',  prenom:'Sofiene', age:28,status:'actif',   pilier:'formation', progress:61,diagnostic:'Alcool professionnel, divorce'},
+    {id:10,code:'RES-010',nom:'Hammami',   prenom:'Lina',    age:20,status:'actif',   pilier:'ecologie',  progress:38,diagnostic:'Dépression + automédication'},
+    {id:11,code:'RES-011',nom:'Chaabane',  prenom:'Riadh',   age:35,status:'actif',   pilier:'therapie',  progress:52,diagnostic:'Alcool chronique, hépatite C'},
+    {id:12,code:'RES-012',nom:'Boughzala', prenom:'Inès',    age:25,status:'actif',   pilier:'sport',     progress:79,diagnostic:'Cannabis, syndrome anxieux'},
+  ],
+  sessions: [
+    {id:1,resident_id:1,type:'individuelle',praticien:'Dr. Khelil',date:'2025-06-02',duration:60,status:'realisee'},
+    {id:2,resident_id:2,type:'groupe',      praticien:'Mme. Trabelsi',date:'2025-06-03',duration:90,status:'planifiee'},
+    {id:3,resident_id:3,type:'sport',       praticien:'Coach Salem',date:'2025-06-04',duration:45,status:'realisee'},
+    {id:4,resident_id:4,type:'famille',     praticien:'Mme. Trabelsi',date:'2025-06-05',duration:60,status:'planifiee'},
+    {id:5,resident_id:5,type:'formation',   praticien:'M. Bouzid',date:'2025-06-06',duration:120,status:'realisee'},
+    {id:6,resident_id:6,type:'individuelle',praticien:'Dr. Khelil',date:'2025-06-07',duration:60,status:'planifiee'},
+    {id:7,resident_id:7,type:'groupe',      praticien:'Mme. Trabelsi',date:'2025-06-08',duration:90,status:'realisee'},
+    {id:8,resident_id:8,type:'sport',       praticien:'Coach Salem',date:'2025-06-09',duration:45,status:'planifiee'},
+  ],
+  alerts: [
+    {id:1,resident_id:1,resident:'Ahmed Bensalem',type:'heart_rate',severity:'high',message:'Rythme cardiaque élevé 138 bpm',resolved:false,date:'2025-06-01'},
+    {id:2,resident_id:7,resident:'Khalil Azizi',type:'heart_rate',severity:'high',message:'Rythme cardiaque bas 42 bpm',resolved:false,date:'2025-06-01'},
+    {id:3,resident_id:10,resident:'Lina Hammami',type:'inactivite',severity:'medium',message:'Inactivité détectée depuis 4h',resolved:false,date:'2025-06-02'},
+    {id:4,resident_id:4,resident:'Nour Triki',type:'absence',severity:'medium',message:'Séance manquée sans justification',resolved:false,date:'2025-06-02'},
+    {id:5,resident_id:3,resident:'Youssef Khelifi',type:'heart_rate',severity:'low',message:'Valeur normalisée — surveillance levée',resolved:true,date:'2025-05-30'},
+  ],
+  formations: [
+    {id:1,titre:'Bureautique & MS Office',formateur:'M. Bouzid',places:15,inscrits:12,statut:'actif',debut:'2025-01-06'},
+    {id:2,titre:'Design graphique (Canva)',formateur:'Mme. Ghorbel',places:12,inscrits:8,statut:'actif',debut:'2025-01-08'},
+    {id:3,titre:'Poterie & céramique',formateur:'M. Chaabane',places:10,inscrits:10,statut:'actif',debut:'2024-12-15'},
+    {id:4,titre:'Couture & textile',formateur:'Mme. Sfaxi',places:10,inscrits:7,statut:'actif',debut:'2025-01-10'},
+    {id:5,titre:'Entrepreneuriat social',formateur:'M. Ben Ali',places:20,inscrits:14,statut:'planifiee',debut:'2025-02-01'},
+  ],
+  registrations: [
+    {id:1,nom:'Ben Salah', prenom:'Omar',  email:'omar.bensalah@gmail.com', age:23,type:'resident',situation:'Cannabis depuis 3 ans',status:'en_attente',date:'2025-06-01'},
+    {id:2,nom:'Mejri',     prenom:'Nadia', email:'nadia.mejri@gmail.com',   age:20,type:'resident',situation:'Dépendance médicaments',status:'en_attente',date:'2025-06-01'},
+    {id:3,nom:'Haddad',    prenom:'Karim', email:'karim.haddad@gmail.com',  age:29,type:'resident',situation:'Alcool, problèmes pro',status:'en_attente',date:'2025-06-02'},
+    {id:4,nom:'Dr. Nasr',  prenom:'Sonia', email:'sonia.nasr@medecin.tn',   age:38,type:'staff',   role:'psychologue',status:'en_attente',date:'2025-06-02'},
+    {id:5,nom:'Gharbi',    prenom:'Fatma', email:'fatma.gharbi@gmail.com',   age:25,type:'resident',situation:'Benzodiazépines',status:'approuve',date:'2025-05-28'},
+  ],
+  nextResidentId: 13,
+  nextSessionId: 9,
+  nextRegistrationId: 6,
+};
+
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════ */
+let currentPage = '';
+
+function showPub(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('pub-nav').style.display = 'flex';
+  window.scrollTo(0, 0);
+  if (id === 'signup') initSignup();
+  currentPage = id;
+}
+
+function showApp(section) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-app').classList.add('active');
+  document.getElementById('pub-nav').style.display = 'none';
+  renderSidebar(section);
+  renderSection(section);
+  currentPage = 'app-' + section;
+  window.scrollTo(0, 0);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════════════ */
+function doLogin() {
+  const email = document.getElementById('l-email').value.trim().toLowerCase();
+  const pw = document.getElementById('l-pw').value;
+  const errEl = document.getElementById('login-err');
+  errEl.style.display = 'none';
+  if (!email || !pw) { errEl.textContent = 'Veuillez remplir tous les champs.'; errEl.style.display = 'block'; return; }
+  const user = DB.users.find(u => u.email === email && u.pw === pw);
+  if (user) {
+    DB.currentUser = user;
+    showApp('dashboard');
+  } else {
+    errEl.textContent = 'Email ou mot de passe incorrect. Utilisez les comptes de démonstration.';
+    errEl.style.display = 'block';
+  }
+}
+
+function logout() {
+  DB.currentUser = null;
+  showPub('login');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════════ */
+const NAV_ITEMS = [
+  { id:'dashboard',     icon:'◈',  label:'Tableau de bord' },
+  { id:'residents',     icon:'👥', label:'Résidents'       },
+  { id:'sessions',      icon:'📋', label:'Séances'         },
+  { id:'formations',    icon:'🎓', label:'Formations'      },
+  { id:'registrations', icon:'📝', label:'Inscriptions'    },
+  { id:'alerts',        icon:'🔔', label:'Alertes'         },
+  { id:'staff',         icon:'🩺', label:'Équipe'          },
+];
+
+function renderSidebar(active) {
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = NAV_ITEMS.map(item => {
+    const badge = item.id === 'alerts' ? DB.alerts.filter(a => !a.resolved).length : item.id === 'registrations' ? DB.registrations.filter(r => r.status === 'en_attente').length : 0;
+    return `<button class="sidebar-link ${active === item.id ? 'active' : ''}" onclick="showApp('${item.id}')">
+      <span class="sidebar-icon">${item.icon}</span>
+      <span style="flex:1">${item.label}</span>
+      ${badge > 0 ? `<span class="badge-notif">${badge}</span>` : ''}
+    </button>`;
+  }).join('');
+
+  const u = DB.currentUser;
+  const ROLE_LABELS = {admin:'Administrateur',medecin:'Médecin',psychologue:'Psychologue',formateur:'Formateur',coach:'Coach',infirmier:'Infirmier'};
+  document.getElementById('sidebar-user').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">${u.name.charAt(0)}</div>
+      <div>
+        <div class="sidebar-user-name">${u.name}</div>
+        <div class="sidebar-user-role">${ROLE_LABELS[u.role]||u.role}</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Déconnexion →</button>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER SECTIONS
+═══════════════════════════════════════════════════════════ */
+function renderSection(id) {
+  const el = document.getElementById('app-content');
+  const sections = {
+    dashboard:     renderDashboard,
+    residents:     renderResidents,
+    sessions:      renderSessions,
+    formations:    renderFormations,
+    registrations: renderRegistrations,
+    alerts:        renderAlerts,
+    staff:         renderStaff,
+  };
+  el.innerHTML = (sections[id] || renderDashboard)();
+}
+
+/* DASHBOARD */
+function renderDashboard() {
+  const total  = DB.residents.length;
+  const actifs = DB.residents.filter(r=>r.status==='actif').length;
+  const sortis = DB.residents.filter(r=>r.status==='sorti').length;
+  const avgPrg = Math.round(DB.residents.reduce((s,r)=>s+r.progress,0)/total);
+  const done   = DB.sessions.filter(s=>s.status==='realisee').length;
+  const alerts = DB.alerts.filter(a=>!a.resolved).length;
+
+  const byType = ['individuelle','groupe','sport','formation','famille'].map(t=>({
+    name:t, cnt:DB.sessions.filter(s=>s.type===t).length
+  }));
+  const maxBar = Math.max(...byType.map(t=>t.cnt),1);
+
+  const byPilier = ['therapie','formation','sport','ecologie'].map(p=>({
+    name:p, avg:Math.round(DB.residents.filter(r=>r.pilier===p).reduce((s,r)=>s+r.progress,0)/(DB.residents.filter(r=>r.pilier===p).length||1))
+  }));
+
+  return `<div class="content-area au">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px">
+      <div>
+        <h1 class="page-title">Tableau de bord</h1>
+        <p class="page-sub">${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
+      </div>
+    </div>
+    ${alerts>0?`<div class="alert-banner"><span style="font-size:18px">⚠️</span><p style="font-size:13px;color:#92400E;font-weight:600">${alerts} alerte${alerts>1?'s':''} IoT ouvertes — <button onclick="showApp('alerts')" style="text-decoration:underline;background:none;border:none;color:#78350F;cursor:pointer;font-weight:700">voir les alertes</button></p></div>`:''}
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Résidents actifs</div><div class="kpi-value" style="color:var(--forest)">${actifs}</div><div class="kpi-sub">/ ${total} total</div></div>
+      <div class="kpi-card"><div class="kpi-label">Progression moy.</div><div class="kpi-value" style="color:var(--leaf)">${avgPrg}%</div><div class="kpi-sub">objectif : 70%</div></div>
+      <div class="kpi-card"><div class="kpi-label">Séances réalisées</div><div class="kpi-value" style="color:var(--gold)">${done}</div><div class="kpi-sub">cumulées</div></div>
+      <div class="kpi-card"><div class="kpi-label">Réintégration</div><div class="kpi-value" style="color:#3A7CA5">${Math.round(sortis/total*100)}%</div><div class="kpi-sub">${sortis} sortis</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><span class="card-title">Séances par type</span></div><div class="card-body">
+        <div class="chart-bars">
+          ${byType.map(t=>`<div class="bar-wrap"><div class="bar" style="height:${Math.round(t.cnt/maxBar*130)}px;background:var(--leaf);min-height:8px"></div><div class="bar-label">${t.name.slice(0,4)}</div></div>`).join('')}
+        </div>
+      </div></div>
+      <div class="card"><div class="card-header"><span class="card-title">Progression par pilier</span></div><div class="card-body">
+        ${byPilier.map(p=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px"><span>${p.name}</span><span>${p.avg}%</span></div><div class="prog-track"><div class="prog-fill" style="width:${p.avg}%;background:var(--leaf)"></div></div></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">Dernières alertes IoT</span><button class="btn-outline btn-sm" onclick="showApp('alerts')">Voir tout →</button></div>
+    <div>${DB.alerts.slice(0,3).map(a=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border)"><span class="badge badge-${a.severity}">${a.severity}</span><div style="flex:1"><p style="font-size:13px;font-weight:500;color:var(--text)">${a.resident}</p><p style="font-size:11px;color:var(--muted)">${a.message}</p></div>${a.resolved?'<span style="font-size:11px;color:var(--leaf)">✓ Résolu</span>':'<span style="font-size:11px;color:#EF4444">● Ouvert</span>'}</div>`).join('')}</div></div>
+  </div>`;
+}
+
+/* RESIDENTS */
+function renderResidents() {
+  return `<div class="content-area au">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div><h1 class="page-title">Résidents</h1><p class="page-sub">${DB.residents.length} dossiers — ${DB.residents.filter(r=>r.status==='actif').length} actifs</p></div>
+      <button class="btn-primary" onclick="showAddResident()">+ Nouveau résident</button>
+    </div>
+    <div id="res-msg"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Code</th><th>Nom</th><th>Âge</th><th>Statut</th><th>Pilier</th><th>Progression</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${DB.residents.map(r=>`<tr>
+            <td style="font-weight:600;color:var(--forest)">${r.code}</td>
+            <td><div style="font-weight:500">${r.prenom} ${r.nom}</div><div style="font-size:11px;color:var(--muted)">${r.diagnostic.slice(0,40)}…</div></td>
+            <td>${r.age} ans</td>
+            <td><span class="badge badge-${r.status}">${r.status}</span></td>
+            <td>${r.pilier}</td>
+            <td><div class="prog-bar"><div class="prog-track"><div class="prog-fill" style="width:${r.progress}%;background:${r.progress>70?'var(--leaf)':r.progress>40?'var(--gold)':'#EF4444'}"></div></div><div class="prog-label">${r.progress}%</div></div></td>
+            <td><button class="btn-danger btn-sm" onclick="deleteResident(${r.id})">Supprimer</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div id="add-resident-form"></div>
+  </div>`;
+}
+
+function showAddResident() {
+  document.getElementById('add-resident-form').innerHTML = `
+    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;margin-top:16px">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--forest);margin-bottom:16px">Nouveau résident</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="fld"><label class="flbl">Prénom *</label><input class="finp" id="r-prenom" placeholder="Prénom"></div>
+        <div class="fld"><label class="flbl">Nom *</label><input class="finp" id="r-nom" placeholder="Nom"></div>
+        <div class="fld"><label class="flbl">Âge</label><input class="finp" id="r-age" type="number" placeholder="Âge"></div>
+        <div class="fld"><label class="flbl">Pilier</label><select class="finp" id="r-pilier"><option value="therapie">Thérapie</option><option value="formation">Formation</option><option value="sport">Sport</option><option value="ecologie">Écologie</option></select></div>
+      </div>
+      <div class="fld"><label class="flbl">Diagnostique</label><input class="finp" id="r-diag" placeholder="Description du diagnostic"></div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-primary" onclick="addResident()">Créer le dossier</button>
+        <button class="btn-outline" onclick="document.getElementById('add-resident-form').innerHTML=''">Annuler</button>
+      </div>
+    </div>`;
+}
+
+function addResident() {
+  const prenom = document.getElementById('r-prenom').value.trim();
+  const nom    = document.getElementById('r-nom').value.trim();
+  if (!prenom || !nom) { alert('Prénom et nom requis'); return; }
+  const id   = DB.nextResidentId++;
+  const code = 'RES-' + String(id).padStart(3,'0');
+  DB.residents.unshift({ id, code, nom, prenom, age: Number(document.getElementById('r-age').value)||0, status:'actif', pilier:document.getElementById('r-pilier').value, progress:0, diagnostic:document.getElementById('r-diag').value||'Nouveau dossier' });
+  renderSection('residents');
+  const msg = document.getElementById('res-msg');
+  msg.innerHTML = `<div class="alert-ok-box">✅ Résident ${prenom} ${nom} (${code}) créé avec succès !</div>`;
+  setTimeout(()=>{msg.innerHTML=''},3000);
+}
+
+function deleteResident(id) {
+  if (!confirm('Supprimer ce résident ?')) return;
+  DB.residents = DB.residents.filter(r => r.id !== id);
+  renderSection('residents');
+}
+
+/* SESSIONS */
+function renderSessions() {
+  const resMap = {};
+  DB.residents.forEach(r => resMap[r.id] = `${r.prenom} ${r.nom} (${r.code})`);
+  return `<div class="content-area au">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div><h1 class="page-title">Séances</h1><p class="page-sub">${DB.sessions.length} séances — ${DB.sessions.filter(s=>s.status==='planifiee').length} planifiées</p></div>
+      <button class="btn-primary" onclick="showAddSession()">+ Nouvelle séance</button>
+    </div>
+    <div id="sess-msg"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Résident</th><th>Type</th><th>Praticien</th><th>Date</th><th>Durée</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody>
+          ${DB.sessions.map(s=>`<tr>
+            <td style="font-weight:500">${resMap[s.resident_id]||'—'}</td>
+            <td>${s.type}</td>
+            <td style="color:var(--muted);font-size:12px">${s.praticien}</td>
+            <td>${s.date}</td>
+            <td>${s.duration} min</td>
+            <td><span class="badge badge-${s.status}">${s.status}</span></td>
+            <td>${s.status==='planifiee'?`<button class="btn-outline btn-sm" onclick="completeSession(${s.id})">✓ Réaliser</button>`:'<span style="font-size:11px;color:var(--leaf)">✓ Fait</span>'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div id="add-session-form"></div>
+  </div>`;
+}
+
+function showAddSession() {
+  const resOpts = DB.residents.filter(r=>r.status==='actif').map(r=>`<option value="${r.id}">${r.prenom} ${r.nom} (${r.code})</option>`).join('');
+  document.getElementById('add-session-form').innerHTML = `
+    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;margin-top:16px">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--forest);margin-bottom:16px">Nouvelle séance</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="fld"><label class="flbl">Résident *</label><select class="finp" id="s-res"><option value="">Choisir...</option>${resOpts}</select></div>
+        <div class="fld"><label class="flbl">Type</label><select class="finp" id="s-type"><option value="individuelle">Individuelle</option><option value="groupe">Groupe</option><option value="famille">Famille</option><option value="sport">Sport</option><option value="formation">Formation</option></select></div>
+        <div class="fld"><label class="flbl">Praticien</label><select class="finp" id="s-prat"><option>Dr. Khelil</option><option>Mme. Trabelsi</option><option>Coach Salem</option><option>M. Bouzid</option><option>Mme. Sfaxi</option></select></div>
+        <div class="fld"><label class="flbl">Date *</label><input class="finp" id="s-date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="fld"><label class="flbl">Durée (min)</label><input class="finp" id="s-dur" type="number" value="60"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-primary" onclick="addSession()">Créer la séance</button>
+        <button class="btn-outline" onclick="document.getElementById('add-session-form').innerHTML=''">Annuler</button>
+      </div>
+    </div>`;
+}
+
+function addSession() {
+  const rid = document.getElementById('s-res').value;
+  if (!rid) { alert('Choisissez un résident'); return; }
+  const id = DB.nextSessionId++;
+  DB.sessions.unshift({ id, resident_id:Number(rid), type:document.getElementById('s-type').value, praticien:document.getElementById('s-prat').value, date:document.getElementById('s-date').value, duration:Number(document.getElementById('s-dur').value)||60, status:'planifiee' });
+  renderSection('sessions');
+  const msg = document.getElementById('sess-msg');
+  msg.innerHTML = `<div class="alert-ok-box">✅ Séance créée avec succès !</div>`;
+  setTimeout(()=>{msg.innerHTML=''},3000);
+}
+
+function completeSession(id) {
+  DB.sessions = DB.sessions.map(s => s.id === id ? {...s, status:'realisee'} : s);
+  renderSection('sessions');
+}
+
+/* FORMATIONS */
+function renderFormations() {
+  return `<div class="content-area au">
+    <h1 class="page-title">Formations</h1>
+    <p class="page-sub">${DB.formations.length} modules de formation</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Module</th><th>Formateur</th><th>Inscrits</th><th>Remplissage</th><th>Statut</th><th>Début</th></tr></thead>
+        <tbody>
+          ${DB.formations.map(f=>`<tr>
+            <td style="font-weight:500">${f.titre}</td>
+            <td style="color:var(--muted);font-size:12px">${f.formateur}</td>
+            <td>${f.inscrits} / ${f.places}</td>
+            <td><div class="prog-bar"><div class="prog-track"><div class="prog-fill" style="width:${Math.round(f.inscrits/f.places*100)}%;background:var(--leaf)"></div></div><div class="prog-label">${Math.round(f.inscrits/f.places*100)}%</div></div></td>
+            <td><span class="badge badge-${f.statut==='actif'?'actif':'planifiee'}">${f.statut}</span></td>
+            <td>${f.debut}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* REGISTRATIONS */
+function renderRegistrations() {
+  const pending = DB.registrations.filter(r=>r.status==='en_attente').length;
+  return `<div class="content-area au">
+    <h1 class="page-title">Demandes d'inscription</h1>
+    <p class="page-sub">${pending} en attente — ${DB.registrations.length} total</p>
+    <div id="reg-msg"></div>
+    <div style="display:flex;gap:16px;margin-bottom:18px">
+      ${[['en_attente','⏳','En attente','#FEF3C7','#92400E'],['approuve','✅','Approuvées','#D1FAE5','#065F46'],['refuse','❌','Refusées','#FEE2E2','#991B1B']].map(([s,ic,l,bg,tx])=>`<div style="flex:1;padding:16px;border-radius:12px;background:${bg};text-align:center;border:1px solid ${tx}22"><p style="font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:${tx}">${DB.registrations.filter(r=>r.status===s).length}</p><p style="font-size:11px;color:${tx};margin-top:3px">${l}</p></div>`).join('')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${DB.registrations.map(r=>`<div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px 20px;display:flex;align-items:flex-start;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
+        <div style="width:44px;height:44px;border-radius:50%;background:${r.type==='resident'?'#2D6A4F':'#3A7CA5'};display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Playfair Display',serif">${r.prenom.charAt(0)}${r.nom.charAt(0)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span style="font-size:14px;font-weight:600;color:var(--forest)">${r.prenom} ${r.nom}</span>
+            <span style="font-size:11px;padding:2px 8px;border-radius:100px;background:${r.type==='resident'?'#EEF9F3':'#EFF6FF'};color:${r.type==='resident'?'#065F46':'#1E40AF'};font-weight:600">${r.type==='resident'?'🏥 Résident':'👔 Staff'}</span>
+            <span class="badge badge-${r.status}">${r.status}</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">${r.email} ${r.age?'· '+r.age+' ans':''} ${r.role?'· '+r.role:''}</div>
+          ${(r.situation||r.message)?`<div style="font-size:12px;color:var(--text);margin-top:6px;padding:6px 10px;background:rgba(27,67,50,.04);border-left:3px solid var(--mint);border-radius:4px">${r.situation||r.message}</div>`:''}
+        </div>
+        ${r.status==='en_attente'?`<div style="display:flex;gap:8px;flex-shrink:0">
+          <button class="btn-primary btn-sm" onclick="approveReg(${r.id})">✓ Approuver</button>
+          <button class="btn-danger btn-sm" onclick="rejectReg(${r.id})">✗ Refuser</button>
+        </div>`:''}
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function approveReg(id) {
+  const reg = DB.registrations.find(r=>r.id===id);
+  if (!reg) return;
+  DB.registrations = DB.registrations.map(r => r.id===id ? {...r, status:'approuve'} : r);
+  if (reg.type === 'resident') {
+    const rid = DB.nextResidentId++;
+    DB.residents.unshift({ id:rid, code:'RES-'+String(rid).padStart(3,'0'), nom:reg.nom, prenom:reg.prenom, age:reg.age||0, status:'actif', pilier:'therapie', progress:0, diagnostic:reg.situation||'Nouveau résident' });
+  }
+  renderSection('registrations');
+  const msg = document.getElementById('reg-msg');
+  msg.innerHTML = `<div class="alert-ok-box">✅ Demande approuvée${reg.type==='resident'?' — dossier résident créé':''}.</div>`;
+  setTimeout(()=>{msg.innerHTML=''},4000);
+}
+
+function rejectReg(id) {
+  if (!confirm('Refuser cette demande ?')) return;
+  DB.registrations = DB.registrations.map(r => r.id===id ? {...r, status:'refuse'} : r);
+  renderSection('registrations');
+}
+
+/* ALERTS */
+function renderAlerts() {
+  const SEV = {high:{bg:'#FEE2E2',border:'#F87171',text:'#991B1B',icon:'🔴'},medium:{bg:'#FEF3C7',border:'#FCD34D',text:'#92400E',icon:'🟡'},low:{bg:'#D1FAE5',border:'#6EE7B7',text:'#065F46',icon:'🟢'}};
+  return `<div class="content-area au">
+    <h1 class="page-title">Alertes IoT</h1>
+    <p class="page-sub">${DB.alerts.filter(a=>!a.resolved).length} alertes ouvertes</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${DB.alerts.map(a=>{const s=SEV[a.severity]||SEV.low;return`<div style="padding:14px 18px;border-radius:14px;border:1px solid ${s.border};background:${s.bg};display:flex;align-items:flex-start;gap:14px;opacity:${a.resolved?.6:1}">
+        <span style="font-size:20px">${s.icon}</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:700;color:${s.text}">${a.resident}</span>
+            <span class="badge badge-${a.severity}">${a.severity}</span>
+            ${a.resolved?'<span class="badge badge-realisee">Résolu</span>':''}
+          </div>
+          <p style="font-size:13px;color:${s.text}">${a.message}</p>
+          <p style="font-size:11px;color:${s.text};opacity:.6;margin-top:3px">${a.date}</p>
+        </div>
+        ${!a.resolved?`<button class="btn-outline btn-sm" onclick="resolveAlert(${a.id})">Résoudre</button>`:''}
+      </div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+function resolveAlert(id) {
+  DB.alerts = DB.alerts.map(a => a.id===id ? {...a, resolved:true} : a);
+  renderSection('alerts');
+  renderSidebar('alerts');
+}
+
+/* STAFF */
+function renderStaff() {
+  const ROLE_LABELS = {admin:'Administrateur',medecin:'Médecin psychiatre',psychologue:'Psychologue',formateur:'Formateur',coach:'Coach sportif',infirmier:'Infirmier(ère)'};
+  const ROLE_BG = {admin:'#F3F4F6',medecin:'#D1FAE5',psychologue:'#EDE9FE',formateur:'#FEF3C7',coach:'#DBEAFE',infirmier:'#FCE7F3'};
+  const ROLE_TX = {admin:'#1F2937',medecin:'#065F46',psychologue:'#4C1D95',formateur:'#92400E',coach:'#1E40AF',infirmier:'#9D174D'};
+  const roleCounts = {};
+  Object.keys(ROLE_LABELS).forEach(r => roleCounts[r] = DB.users.filter(u=>u.role===r&&u.active!==false).length);
+  return `<div class="content-area au">
+    <h1 class="page-title">Équipe soignante</h1>
+    <p class="page-sub">${DB.users.length} membres</p>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px">
+      ${Object.entries(ROLE_LABELS).map(([r,l])=>`<div style="padding:12px;border-radius:12px;background:${ROLE_BG[r]};text-align:center;border:1px solid ${ROLE_TX[r]}22"><p style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:${ROLE_TX[r]}">${roleCounts[r]||0}</p><p style="font-size:10px;color:${ROLE_TX[r]};opacity:.75;margin-top:2px;line-height:1.3">${l}</p></div>`).join('')}
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th></tr></thead>
+        <tbody>
+          ${DB.users.map(u=>`<tr>
+            <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:${ROLE_BG[u.role]||'#f3f4f6'};color:${ROLE_TX[u.role]||'#374151'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">${u.name.charAt(0)}</div><span style="font-weight:500">${u.name}</span></div></td>
+            <td style="font-size:12px;color:var(--muted)">${u.email}</td>
+            <td><span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:${ROLE_BG[u.role]||'#f3f4f6'};color:${ROLE_TX[u.role]||'#374151'}">${ROLE_LABELS[u.role]||u.role}</span></td>
+            <td><span class="badge badge-actif">Actif</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SIGNUP WIZARD
+═══════════════════════════════════════════════════════════ */
+const SW = { step:0, type:'', f:{prenom:'',nom:'',email:'',tel:'',age:'',role:'',sit:'',urg:'non',msg:''}, err:{} };
+const ROLES=[{v:'medecin',l:'Médecin psychiatre'},{v:'psychologue',l:'Psychologue clinicien(ne)'},{v:'infirmier',l:'Infirmier(ère)'},{v:'coach',l:'Coach sportif'},{v:'formateur',l:'Formateur / Formatrice'},{v:'admin',l:'Administrateur'}];
+const SITS=[{v:'cannabis',l:'Cannabis / résine'},{v:'alcool',l:'Alcool'},{v:'medicaments',l:'Médicaments détournés'},{v:'cocaine',l:'Cocaïne / crack'},{v:'opioides',l:'Opioïdes / héroïne'},{v:'polyconsom',l:'Polyconsommation'},{v:'autre',l:'Autre / Je préfère ne pas préciser'}];
+
+function initSignup(){ SW.step=1; SW.type='resident'; SW.f={prenom:'',nom:'',email:'',tel:'',age:'',sit:'',urg:'non',msg:''}; SW.err={}; renderSW(); }
+
+function renderSW(){
+  const el = document.getElementById('signup-inner');
+  if (!el) return;
+  // Steps: 1=personal info, 2=situation, 3=confirmation
+  let h=`<div class="steps-bar">${[1,2,3].map((n,i)=>{const done=SW.step>n,active=SW.step===n;return`<div class="sdot" style="background:${done?'var(--leaf)':active?'rgba(116,198,157,.15)':'rgba(255,255,255,.05)'};border:2px solid ${done?'var(--leaf)':active?'var(--mint)':'rgba(255,255,255,.1)'};color:${done?'#fff':active?'var(--mint)':'rgba(255,255,255,.25)'}">${done?'✓':n}</div>${i<2?`<div class="sline" style="background:${SW.step>n?'var(--leaf)':'rgba(255,255,255,.1)'}"></div>`:''}`}).join('')}<span style="margin-left:14px;font-size:12px;color:rgba(255,255,255,.35)">Étape ${SW.step}/3</span></div>`;
+  if(SW.step===1)h+=sw1();
+  else if(SW.step===2)h+=sw2();
+  else if(SW.step===3)h+=sw3();
+  el.innerHTML=h;
+  el.querySelectorAll('[data-k]').forEach(inp=>{
+    const k=inp.dataset.k;
+    if(SW.f[k]!==undefined)inp.value=SW.f[k]||'';
+    inp.addEventListener('input',()=>SW.f[k]=inp.value);
+    inp.addEventListener('focus',()=>{inp.style.borderColor='var(--mint)';inp.style.background='rgba(116,198,157,.08)';});
+    inp.addEventListener('blur',()=>{inp.style.borderColor='rgba(116,198,157,.2)';inp.style.background='rgba(255,255,255,.07)';});
+  });
+}
+
+function serr(k){return SW.err[k]?`<div style="font-size:11px;color:#FCA5A5;margin-top:2px">⚠ ${SW.err[k]}</div>`:''}
+const LBL=t=>`<label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mint);display:block;margin-bottom:5px">${t}</label>`;
+
+function sw0(){ return ''; } // no longer used - signup goes directly to step 1
+function sw1(){return`
+  <h2 class="auth-title" style="font-size:22px;margin-bottom:4px">Demande d'admission</h2>
+  <p class="auth-desc" style="font-size:12px;margin-bottom:20px">🔒 Vos données sont strictement confidentielles</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div>${LBL('Prénom *')}<input class="auth-inp" data-k="prenom" placeholder="Votre prénom">${serr('prenom')}</div>
+    <div>${LBL('Nom *')}<input class="auth-inp" data-k="nom" placeholder="Votre nom">${serr('nom')}</div>
+  </div>
+  ${LBL('Email *')}<input class="auth-inp" data-k="email" type="email" placeholder="vous@email.com">${serr('email')}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>${LBL('Téléphone')}<input class="auth-inp" data-k="tel" placeholder="+216 XX XXX XXX"></div>
+    <div>${LBL('Âge')}<input class="auth-inp" data-k="age" type="number" min="14" max="80" placeholder="Votre âge">${serr('age')}</div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="showPub('login')">← Connexion</button>
+    <button class="btn-next" onclick="val1SW()">Continuer →</button>
+  </div>
+  <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-top:12px">Vous avez déjà un compte ? <button onclick="showPub('login')" style="color:var(--mint);background:none;border:none;cursor:pointer;font-size:11px">Se connecter</button></p>
+`;}
+function sw2(){
+  return`
+  <h2 class="auth-title" style="font-size:22px;margin-bottom:4px">Votre situation</h2>
+  <p class="auth-desc" style="font-size:12px;margin-bottom:16px">Ces informations aident notre équipe médicale à préparer votre accueil.</p>
+  ${LBL('Quelle substance est concernée ? *')}
+  <div class="sit-grid">${SITS.map(s=>`<button class="sit-opt${SW.f.sit===s.v?' sel':''}" onclick="SW.f.sit='${s.v}';renderSW()">${s.l}</button>`).join('')}</div>
+  ${serr('sit')}
+  ${LBL('Situation urgente ?')}
+  <div class="urg-row">
+    <button class="urg-btn urg-yes${SW.f.urg==='oui'?' sel':''}" onclick="SW.f.urg='oui';renderSW()">⚠️ Oui, urgent</button>
+    <button class="urg-btn urg-no${SW.f.urg==='non'?' sel':''}" onclick="SW.f.urg='non';renderSW()">✓ Non urgent</button>
+  </div>
+  ${LBL('Message (facultatif)')}<textarea class="auth-inp" data-k="msg" rows="3" placeholder="Partagez ce que vous souhaitez nous dire en toute confidentialité…" style="resize:vertical;line-height:1.6"></textarea>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="SW.step=1;renderSW()">← Retour</button>
+    <button class="btn-next" onclick="val2SW()">Continuer →</button>
+  </div>`;
+}
+function sw3(){
+  const si = SITS.find(s=>s.v===SW.f.sit)?.l || '—';
+  const rows = [
+    ['Email',    SW.f.email],
+    ['Téléphone',SW.f.tel  || '—'],
+    ['Âge',      SW.f.age  ? SW.f.age + ' ans' : '—'],
+    ['Situation', si],
+    ['Urgence',   SW.f.urg === 'oui' ? '⚠️ Urgent' : 'Non urgent'],
+  ];
+  return`
+  <h2 class="auth-title" style="font-size:22px;margin-bottom:4px">Confirmation</h2>
+  <p class="auth-desc" style="font-size:12px;margin-bottom:16px">Vérifiez vos informations avant d'envoyer.</p>
+  <div class="sum-box">
+    <div class="sum-hdr">
+      <div class="sum-av">${(SW.f.prenom.charAt(0)||'?')}${(SW.f.nom.charAt(0)||'?')}</div>
+      <div>
+        <div class="sum-name">${SW.f.prenom} ${SW.f.nom}</div>
+        <div class="sum-type">🏥 Demande d'admission</div>
+      </div>
+    </div>
+    ${rows.map(([k,v])=>`<div class="sum-row"><span class="sum-k">${k}</span><span class="sum-v">${v}</span></div>`).join('')}
+  </div>
+  <label class="chk-lbl">
+    <input type="checkbox" id="sw-chk">
+    <span class="chk-txt">J'accepte que mes informations soient utilisées par le Smart Rehab & Green Center dans le cadre de ma demande. Données <strong style="color:rgba(255,255,255,.7)">strictement confidentielles</strong>.</span>
+  </label>
+  <div id="sw-err"></div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="SW.step=2;renderSW()">← Retour</button>
+    <button class="btn-next" id="sw-submit" onclick="submitSW()">✓ Envoyer ma demande</button>
+  </div>`;
+}
+
+function val1SW(){
+  const e={};
+  if(!SW.f.prenom.trim())e.prenom='Requis';
+  if(!SW.f.nom.trim())e.nom='Requis';
+  if(!SW.f.email.trim()||!/\S+@\S+\.\S+/.test(SW.f.email))e.email='Email invalide';
+  if(SW.f.age&&(Number(SW.f.age)<14||Number(SW.f.age)>80))e.age='Âge entre 14 et 80';
+  SW.err=e;
+  if(!Object.keys(e).length){SW.step=2;renderSW();}else renderSW();
+}
+function val2SW(){
+  const e={};
+  if(!SW.f.sit) e.sit='Veuillez choisir votre situation';
+  SW.err=e;
+  if(!Object.keys(e).length){SW.step=3;renderSW();}else renderSW();
+}
+function submitSW(){
+  const chk=document.getElementById('sw-chk')?.checked;
+  if(!chk){document.getElementById('sw-err').innerHTML='<div style="font-size:11px;color:#FCA5A5;margin-top:6px">⚠ Vous devez accepter les conditions.</div>';return;}
+  const id=DB.nextRegistrationId++;
+  DB.registrations.push({
+    id, nom:SW.f.nom, prenom:SW.f.prenom, email:SW.f.email,
+    age:SW.f.age?Number(SW.f.age):null,
+    type:'resident', role:'', situation:SW.f.sit,
+    status:'en_attente', date:new Date().toISOString().slice(0,10),
+    message:(SW.f.urg==='oui'?'[URGENT] ':'')+SW.f.msg
+  });
+  document.getElementById('signup-inner').innerHTML=`
+    <div style="text-align:center;padding:10px 0">
+      <div class="suc-icon">✓</div>
+      <h2 class="auth-title">Demande envoyée !</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.5);margin:10px 0 24px;line-height:1.8">
+        Merci <strong style="color:var(--mint)">${SW.f.prenom}</strong> !<br>
+        Notre équipe vous contactera à <strong style="color:var(--mint)">${SW.f.email}</strong>
+        dans les <strong>48 heures</strong>.
+      </p>
+      <div style="padding:14px;border-radius:12px;background:rgba(116,198,157,.07);border:1px solid rgba(116,198,157,.15);margin-bottom:20px;font-size:12px;color:rgba(255,255,255,.5);line-height:1.8">
+        ${SW.f.urg==='oui'?'<p style="color:#FCA5A5;font-weight:600;margin-bottom:6px">⚠️ Demande marquée URGENT — notre équipe vous recontactera en priorité.</p>':''}
+        Votre dossier sera examiné par notre équipe médicale. Un rendez-vous d'admission vous sera proposé.
+      </div>
+      <button class="btn-submit" onclick="showPub('home')">Retour à l'accueil</button>
+      <div style="margin-top:10px;text-align:center">
+        <button onclick="showPub('login')" style="background:none;border:none;color:var(--mint);font-size:13px;cursor:pointer">
+          Se connecter →
+        </button>
+      </div>
+    </div>`;
+}
+
+// Init
+initSignup();
+</script>
+</body>
+</html>

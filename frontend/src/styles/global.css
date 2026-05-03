@@ -1,0 +1,51 @@
+:root {
+  --forest:  #1B4332;
+  --mid:     #2D6A4F;
+  --leaf:    #40916C;
+  --mint:    #74C69D;
+  --gold:    #B7935F;
+  --cream:   #F8F6F0;
+  --dark:    #0A1F14;
+  --text:    #2C3E30;
+  --muted:   #6B7B6E;
+  --white:   #FFFFFF;
+  --border:  rgba(27,67,50,0.1);
+  --shadow:  0 2px 12px rgba(0,0,0,0.05);
+  --radius:  14px;
+  --radius-sm: 8px;
+}
+
+body { color: var(--text); background: var(--cream); overflow-x: hidden; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.animate-fadeUp { animation: fadeUp 0.45s ease both; }
+.animate-fadeIn { animation: fadeIn 0.3s ease both; }
+.delay-1 { animation-delay: 0.08s; }
+.delay-2 { animation-delay: 0.16s; }
+.delay-3 { animation-delay: 0.24s; }
+.delay-4 { animation-delay: 0.32s; }
+
+.live-dot {
+  display: inline-block;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22C55E;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(27,67,50,0.15); border-radius: 3px; }
+
+input, select, textarea, button { font-family: inherit; }

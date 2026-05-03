@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Rehab & Green Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#0A1F14;color:#fff;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* PAGES */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(10,31,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(116,198,157,.1)}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{width:38px;height:38px;border-radius:50%;background:#40916C;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-txt{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;line-height:1.2}
+.logo-txt span{color:#74C69D;font-style:italic;font-weight:400}
+.nav-btns{display:flex;gap:10px}
+.nav-links{display:flex;align-items:center;gap:20px}
+.nav-link{font-size:13px;color:rgba(255,255,255,.6);background:none;border:none;padding:4px;cursor:pointer;transition:color .2s}
+.nav-link:hover{color:#74C69D}
+.btn-primary{padding:9px 20px;border-radius:100px;background:#40916C;color:#fff;border:none;font-size:13px;font-weight:600;transition:filter .2s}
+.btn-primary:hover{filter:brightness(.9)}
+.btn-outline{padding:9px 20px;border-radius:100px;background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);font-size:13px;cursor:pointer;transition:all .2s}
+.btn-outline:hover{border-color:#74C69D;color:#74C69D}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:100px 48px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 20%,rgba(45,106,79,.3),transparent 60%),radial-gradient(ellipse 50% 50% at 10% 80%,rgba(27,67,50,.4),transparent 60%)}
+.hero-content{position:relative;z-index:2;max-width:650px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.3);color:#74C69D;padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(38px,7vw,70px);font-weight:900;line-height:1.05;margin-bottom:20px}
+.hero h1 em{font-style:italic;color:#74C69D;display:block}
+.hero p{font-size:16px;color:rgba(255,255,255,.6);line-height:1.8;max-width:520px;margin-bottom:36px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-hero{padding:14px 32px;border-radius:100px;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:all .25s}
+.btn-hero-green{background:#40916C;color:#fff;box-shadow:0 4px 24px rgba(64,145,108,.4)}
+.btn-hero-green:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(64,145,108,.45)}
+.btn-hero-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25)}
+.btn-hero-ghost:hover{border-color:#74C69D;color:#74C69D}
+
+/* STATS */
+.stats-bar{display:flex;gap:36px;margin-top:56px;flex-wrap:wrap}
+.stat{border-left:2px solid #40916C;padding-left:14px}
+.stat-n{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#fff}
+.stat-n span{color:#74C69D}
+.stat-l{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+
+/* SECTIONS */
+.section{padding:80px 48px}
+.section-inner{max-width:1100px;margin:0 auto}
+.stag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#B7935F;margin-bottom:10px}
+.stitle{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.2;margin-bottom:14px}
+.ssub{font-size:15px;color:rgba(255,255,255,.55);line-height:1.8;max-width:560px;margin-bottom:44px}
+
+/* CARDS */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:26px;transition:all .3s}
+.card:hover{background:rgba(116,198,157,.07);border-color:rgba(116,198,157,.25);transform:translateY(-4px)}
+.card-icon{width:52px;height:52px;border-radius:14px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.15);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.card h3{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:8px}
+.card p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.8}
+
+/* PILLAR CARDS */
+.pillar{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07);transition:transform .3s;border:1px solid rgba(27,67,50,.06)}
+.pillar:hover{transform:translateY(-6px)}
+.pillar-top{padding:28px;color:#fff}
+.pt1{background:linear-gradient(135deg,#1B4332,#2D6A4F)}
+.pt2{background:linear-gradient(135deg,#40916C,#52B788)}
+.pt3{background:linear-gradient(135deg,#B7935F,#C4A57D)}
+.pt4{background:linear-gradient(135deg,#2D6A4F,#40916C)}
+.pillar-top .pi{font-size:30px;display:block;margin-bottom:8px}
+.pillar-top h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.pillar-body{padding:22px 26px;background:#fff}
+.pillar-body li{font-size:13px;color:#6B7B6E;padding:4px 0 4px 16px;position:relative;line-height:1.5;list-style:none}
+.pillar-body li::before{content:'→';position:absolute;left:0;color:#40916C;font-weight:700}
+
+/* IMPACT */
+.impact-section{background:linear-gradient(135deg,#1B4332,#2D6A4F)}
+.impact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.impact-card{text-align:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:34px 20px;transition:all .3s}
+.impact-card:hover{background:rgba(255,255,255,.11);transform:translateY(-4px)}
+.impact-n{font-family:'Playfair Display',serif;font-size:50px;font-weight:900;color:#74C69D;line-height:1}
+.impact-card h3{font-size:15px;color:#fff;margin:10px 0 6px;font-weight:600}
+.impact-card p{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7}
+
+/* TEAM */
+.team-card{display:flex;gap:16px;padding:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;align-items:flex-start}
+.team-av{width:50px;height:50px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.team-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff}
+.team-role{font-size:11px;color:#74C69D;font-weight:600;margin:3px 0 6px}
+.team-bio{font-size:12px;color:rgba(255,255,255,.45);line-height:1.7}
+
+/* CTA */
+.cta-sec{background:#1B4332;text-align:center;padding:80px 40px}
+.cta-sec .stitle{color:#fff}
+.cta-sec p{color:rgba(255,255,255,.6);font-size:15px;max-width:480px;margin:0 auto 36px;line-height:1.8}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* INFO PAGE */
+.info-hero{padding:120px 48px 60px;max-width:900px;margin:0 auto;text-align:center}
+.info-hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,56px);font-weight:900;line-height:1.1;margin-bottom:18px}
+.info-hero p{font-size:16px;color:rgba(255,255,255,.55);line-height:1.85;max-width:620px;margin:0 auto 36px}
+.info-stats{display:grid;grid-template-columns:repeat(4,1fr);border-radius:18px;overflow:hidden;border:1px solid rgba(116,198,157,.1)}
+.istat{padding:26px 16px;text-align:center;background:rgba(27,67,50,.4);border-right:1px solid rgba(116,198,157,.1)}
+.istat:last-child{border-right:none}
+.istat-n{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:#74C69D}
+.istat-l{font-size:12px;color:rgba(255,255,255,.4);margin-top:4px}
+.info-blocks{max-width:960px;margin:0 auto;padding:0 48px 80px}
+.iblock{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-bottom:48px;padding:36px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:20px}
+.iblock.rev>:first-child{order:2}
+.iblock.rev>:last-child{order:1}
+.iblock-img{border-radius:14px;aspect-ratio:4/3;background:linear-gradient(135deg,#2D6A4F,#40916C);display:flex;align-items:center;justify-content:center;font-size:80px}
+.iblock h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:12px}
+.iblock p{font-size:14px;color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:10px}
+.feat{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.feat-item{display:flex;gap:10px;align-items:flex-start}
+.feat-dot{width:22px;height:22px;border-radius:6px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px}
+.feat-txt{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+.contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:36px}
+.contact-item{display:flex;gap:12px;align-items:flex-start;padding:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px}
+.ci-icon{width:38px;height:38px;border-radius:10px;background:rgba(116,198,157,.1);border:1px solid rgba(116,198,157,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ci-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#74C69D;margin-bottom:3px}
+.ci-val{font-size:13px;color:rgba(255,255,255,.65)}
+
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex}
+.auth-left{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:52px;background:#1B4332}
+.auth-right{flex:0 0 500px;background:#0A1F14;display:flex;align-items:center;justify-content:center;padding:48px 44px;overflow-y:auto}
+.auth-inner{width:100%;max-width:390px}
+.auth-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#fff;margin-bottom:6px}
+.auth-desc{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:28px}
+.auth-quote{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:14px}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ms{background:rgba(255,255,255,.07);border-radius:12px;padding:14px}
+.ms-n{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#74C69D}
+.ms-l{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.flabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#74C69D}
+.finput{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(116,198,157,.2);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;transition:border-color .2s,background .2s}
+.finput:focus{border-color:#74C69D;background:rgba(116,198,157,.08)}
+.finput::placeholder{color:rgba(255,255,255,.3)}
+.ferr{font-size:11px;color:#FCA5A5;margin-top:2px}
+.btn-submit{width:100%;padding:13px;border-radius:12px;border:none;background:#40916C;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:filter .2s;margin-top:6px}
+.btn-submit:hover{filter:brightness(.9)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed}
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0}
+.divider hr{flex:1;border:none;border-top:1px solid rgba(255,255,255,.1)}
+.divider span{font-size:11px;color:rgba(255,255,255,.3)}
+.btn-sec{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(116,198,157,.25);background:transparent;color:#74C69D;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn-sec:hover{background:rgba(116,198,157,.08)}
+.demo-box{margin-top:20px;padding:14px;border-radius:12px;background:rgba(116,198,157,.07);border:1px solid rgba(116,198,157,.15)}
+.demo-title{font-size:11px;color:#74C69D;font-weight:700;margin-bottom:6px}
+.demo-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.45);margin-bottom:2px}
+.demo-row strong{color:#74C69D}
+.alert-err{padding:10px 14px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#FCA5A5;font-size:12px;margin-bottom:12px;display:none}
+.alert-ok{padding:10px 14px;border-radius:10px;background:rgba(64,145,108,.1);border:1px solid rgba(64,145,108,.2);color:#74C69D;font-size:12px;margin-bottom:12px;display:none}
+
+/* SIGNUP WIZARD */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:28px}
+.sdot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .3s}
+.sline{flex:1;height:2px;margin:0 8px;transition:background .3s}
+.type-btns{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.tbtn{display:flex;gap:14px;padding:18px 20px;border-radius:14px;border:2px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;text-align:left;width:100%;transition:all .2s}
+.tbtn:hover{border-color:#74C69D;background:rgba(116,198,157,.07)}
+.tbtn-icon{font-size:26px;flex-shrink:0}
+.tbtn-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.tbtn-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+.grid-2-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.role-list{display:flex;flex-direction:column;gap:7px}
+.rbtn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;width:100%;transition:all .15s}
+.rbtn:hover,.rbtn.sel{border-color:#74C69D;background:rgba(116,198,157,.08)}
+.rbtn.sel span{color:#74C69D;font-weight:600}
+.rradio{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rradio.chk{border-color:#74C69D}
+.rrinner{width:8px;height:8px;border-radius:50%;background:#74C69D}
+.rlabel{font-size:13px;color:rgba(255,255,255,.6)}
+.sit-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
+.sbtn{padding:9px 11px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;font-size:12px;color:rgba(255,255,255,.5);text-align:left;transition:all .15s}
+.sbtn:hover,.sbtn.sel{border-color:#74C69D;background:rgba(116,198,157,.1);color:#74C69D;font-weight:600}
+.urgrow{display:flex;gap:10px}
+.ubtn{flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);transition:all .15s}
+.ubtn.uy.sel{border-color:#EF4444;background:rgba(239,68,68,.12);color:#FCA5A5}
+.ubtn.un.sel{border-color:#40916C;background:rgba(64,145,108,.12);color:#74C69D}
+.summary-box{background:rgba(255,255,255,.04);border:1px solid rgba(116,198,157,.15);border-radius:14px;padding:18px;margin-bottom:16px}
+.s-header{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.s-av{width:44px;height:44px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.s-name{font-size:15px;font-weight:700;color:#fff}
+.s-type{font-size:11px;color:#74C69D}
+.s-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px}
+.s-row:last-child{border:none}
+.s-key{color:rgba(255,255,255,.4)}
+.s-val{color:rgba(255,255,255,.75);font-weight:500}
+.chk-label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin-bottom:4px}
+.chk-label input{width:15px;height:15px;margin-top:2px;accent-color:#40916C;cursor:pointer;flex-shrink:0}
+.chk-txt{font-size:12px;color:rgba(255,255,255,.45);line-height:1.7}
+.nav-btns{display:flex;gap:10px;margin-top:22px}
+.btn-back{padding:11px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.55);font-size:13px;font-weight:600;cursor:pointer}
+.btn-next{flex:1;padding:11px;border-radius:12px;border:none;background:#40916C;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:filter .2s}
+.btn-next:hover{filter:brightness(.9)}
+.success-screen{text-align:center;padding:10px 0}
+.suc-icon{width:72px;height:72px;border-radius:50%;background:rgba(64,145,108,.15);border:2px solid #40916C;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px}
+
+/* FOOTER */
+footer{padding:26px 48px;border-top:1px solid rgba(116,198,157,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:#060F09}
+.footer-brand{font-family:'Playfair Display',serif;font-size:14px;color:rgba(255,255,255,.35)}
+.footer-brand strong{color:#74C69D}
+.footer-links{display:flex;gap:18px}
+.footer-links button{font-size:12px;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:color .2s}
+.footer-links button:hover{color:#74C69D}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.2)}
+
+@media(max-width:800px){
+  nav{padding:12px 20px}
+  .nav-links{display:none}
+  .hero{padding:90px 20px 60px}
+  .stats-bar{gap:20px}
+  .section{padding:60px 20px}
+  .grid-3,.grid-2,.impact-grid,.info-stats{grid-template-columns:1fr}
+  .auth-left{display:none}
+  .auth-right{flex:1;padding:40px 20px}
+  .info-blocks{padding:0 20px 60px}
+  .iblock{grid-template-columns:1fr}
+  .contact-grid,.sit-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;padding:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="show('home')">
+    <div class="logo-icon">🌿</div>
+    <div class="logo-txt">Smart Rehab<br><span>&amp; Green</span></div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="show('home')">Accueil</button>
+    <button class="nav-link" onclick="show('info')">Informations</button>
+    <button class="nav-link" onclick="show('signup')">S'inscrire</button>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="show('login')">Connexion</button>
+    <button class="btn-primary" onclick="show('signup')">Créer un compte</button>
+  </div>
+</nav>
+
+<!-- ═══════════ PAGE ACCUEIL ═══════════ -->
+<div id="home" class="page active">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="badge">🌿 Innovation · Santé · Environnement</div>
+      <h1>Réhabiliter,<br>Former,<em>Renouveler.</em></h1>
+      <p>Le premier centre tunisien de réhabilitation intelligent — soins médicaux, technologie IoT, formation professionnelle et espaces verts thérapeutiques.</p>
+      <div class="hero-btns">
+        <button class="btn-hero btn-hero-green" onclick="show('signup')">Faire une demande →</button>
+        <button class="btn-hero btn-hero-ghost" onclick="show('info')">En savoir plus</button>
+      </div>
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-n">200<span>+</span></div><div class="stat-l">Bénéficiaires / an</div></div>
+        <div class="stat"><div class="stat-n">80<span>%</span></div><div class="stat-l">Taux réintégration</div></div>
+        <div class="stat"><div class="stat-n">4</div><div class="stat-l">Piliers de soin</div></div>
+        <div class="stat"><div class="stat-n">100<span>%</span></div><div class="stat-l">Engagement vert</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:#1B4332">
+    <div class="section-inner">
+      <p class="stag">Le problème</p>
+      <h2 class="stitle">Un problème qui ne peut plus attendre</h2>
+      <p class="ssub">L'addiction chez les jeunes atteint des niveaux alarmants.</p>
+      <div class="grid-3">
+        <div class="card"><div class="card-icon">📈</div><h3>Hausse de l'addiction</h3><p>+40% de cas chez les 15–35 ans en 5 ans. Cannabis, psychotropes et drogues de synthèse en forte progression.</p></div>
+        <div class="card"><div class="card-icon">🏥</div><h3>Manque de centres modernes</h3><p>Moins de 500 lits disponibles pour un besoin estimé à 5 000+ cas actifs. Infrastructures obsolètes.</p></div>
+        <div class="card"><div class="card-icon">🔄</div><h3>Absence de réintégration</h3><p>Taux de rechute &gt;70% faute de parcours de réinsertion structuré après la guérison médicale.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:#F8F6F0">
+    <div class="section-inner">
+      <p class="stag">Notre approche</p>
+      <h2 class="stitle" style="color:#1B4332">Quatre piliers intégrés</h2>
+      <p class="ssub" style="color:#6B7B6E">Chaque pilier est essentiel — ils fonctionnent ensemble pour une guérison durable.</p>
+      <div class="grid-2">
+        <div class="pillar"><div class="pillar-top pt1"><span class="pi">💊</span><h3>Traitement & Thérapie</h3></div><div class="pillar-body"><ul><li>Évaluation et diagnostic individualisé</li><li>Thérapies cognitivo-comportementales</li><li>Groupes de parole (3 sessions/semaine)</li><li>Suivi psychiatrique et médication</li><li>Sessions familiales mensuelles</li></ul></div></div>
+        <div class="pillar"><div class="pillar-top pt2"><span class="pi">🎓</span><h3>Formation Professionnelle</h3></div><div class="pillar-body"><ul><li>Numérique : bureautique, design, web</li><li>Artisanat : poterie, textile, couture</li><li>Entrepreneuriat social certifié</li><li>Stages et insertions entreprises</li><li>Partenariats 20+ employeurs</li></ul></div></div>
+        <div class="pillar"><div class="pillar-top pt3"><span class="pi">💪</span><h3>Sport & Bien-être</h3></div><div class="pillar-body"><ul><li>Salle fitness avec coach dédié</li><li>Yoga et méditation quotidienne</li><li>Sports collectifs (foot, basket)</li><li>Suivi biométrique ESP32 IoT</li><li>Programme adapté à chaque profil</li></ul></div></div>
+        <div class="pillar"><div class="pillar-top pt4"><span class="pi">🌿</span><h3>Espace Écologique</h3></div><div class="pillar-body"><ul><li>Jardinage thérapeutique collectif</li><li>Potager, compostage, biodiversité</li><li>Ateliers environnement & nature</li><li>Parcours zen et bien-être naturel</li><li>Énergie solaire 100% renouvelable</li></ul></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section impact-section">
+    <div class="section-inner">
+      <p class="stag" style="color:rgba(255,255,255,.5)">Notre engagement</p>
+      <h2 class="stitle">Un impact concret</h2>
+      <div class="impact-grid">
+        <div class="impact-card"><div class="impact-n">60%</div><h3>Réduction de l'addiction</h3><p>Objectif sur 3 ans grâce aux protocoles thérapeutiques intégrés et au suivi IoT.</p></div>
+        <div class="impact-card"><div class="impact-n">80%</div><h3>Taux de réintégration</h3><p>Insertion professionnelle et sociale durable grâce aux formations et partenariats.</p></div>
+        <div class="impact-card"><div class="impact-n">100%</div><h3>Impact environnemental</h3><p>Centre certifié vert — énergie renouvelable, zéro déchet, 200+ arbres plantés.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:#0A1F14">
+    <div class="section-inner">
+      <p class="stag">L'équipe</p>
+      <h2 class="stitle">Des professionnels engagés</h2>
+      <p class="ssub">Une équipe pluridisciplinaire réunie autour d'une même mission.</p>
+      <div class="grid-2">
+        <div class="team-card"><div class="team-av">🩺</div><div><div class="team-name">Dr. Sami Khelil</div><div class="team-role">Médecin psychiatre</div><div class="team-bio">Spécialiste en addictologie, 15 ans d'expérience. Diplômé de la faculté de médecine de Tunis.</div></div></div>
+        <div class="team-card"><div class="team-av">🧠</div><div><div class="team-name">Mme. Ines Trabelsi</div><div class="team-role">Psychologue clinicienne</div><div class="team-bio">Thérapeute en TCC et thérapies motivationnelles. 10 ans de pratique clinique.</div></div></div>
+        <div class="team-card"><div class="team-av">💪</div><div><div class="team-name">Coach Maher Salem</div><div class="team-role">Coach sportif thérapeutique</div><div class="team-bio">Certifié sport-santé et réhabilitation physique. Expert en programmes adaptés.</div></div></div>
+        <div class="team-card"><div class="team-av">🎓</div><div><div class="team-name">M. Yassine Bouzid</div><div class="team-role">Responsable formations</div><div class="team-bio">Ingénieur en formation professionnelle. 20+ partenariats avec entreprises régionales.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-sec">
+    <p class="stag" style="color:#B7935F">Rejoignez-nous</p>
+    <h2 class="stitle">Prêt à commencer ?</h2>
+    <p>Que vous cherchiez de l'aide ou souhaitiez rejoindre notre équipe, nous sommes là.</p>
+    <div class="cta-btns">
+      <button class="btn-hero btn-hero-green" onclick="show('signup')">Créer un compte →</button>
+      <button class="btn-hero btn-hero-ghost" onclick="show('info')">En savoir plus</button>
+      <button class="btn-hero btn-hero-ghost" onclick="show('login')">Accès professionnel</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-brand"><strong>Smart Rehab</strong> &amp; Green Center</div>
+    <div class="footer-links"><button onclick="show('home')">Accueil</button><button onclick="show('info')">Informations</button><button onclick="show('signup')">S'inscrire</button><button onclick="show('login')">Connexion</button></div>
+    <div class="footer-copy">© 2025 Smart Rehab & Green Center. Tunisie.</div>
+  </footer>
+</div>
+
+<!-- ═══════════ PAGE INFORMATIONS ═══════════ -->
+<div id="info" class="page">
+  <div class="info-hero">
+    <p class="stag">Tout savoir</p>
+    <h1>Smart Rehab<br><span style="color:#74C69D">&amp; Green Center</span></h1>
+    <p>Centre innovant de réhabilitation combinant soins médicaux, technologie IoT, formation professionnelle et environnement.</p>
+    <div class="info-stats">
+      <div class="istat"><div class="istat-n">200+</div><div class="istat-l">Bénéficiaires / an</div></div>
+      <div class="istat"><div class="istat-n">80%</div><div class="istat-l">Réintégration</div></div>
+      <div class="istat"><div class="istat-n">4</div><div class="istat-l">Piliers de soin</div></div>
+      <div class="istat"><div class="istat-n">100%</div><div class="istat-l">Vert & durable</div></div>
+    </div>
+  </div>
+
+  <div class="info-blocks">
+    <div class="iblock">
+      <div>
+        <p class="stag">À propos</p>
+        <h2>Une vision holistique de la réhabilitation</h2>
+        <p>Le Smart Rehab &amp; Green Center est né d'un constat simple : traiter l'addiction de manière isolée ne suffit pas. Il faut accompagner le jeune vers une réinsertion complète et durable.</p>
+        <p>Notre modèle intègre simultanément soins médicaux, formation professionnelle, sport et reconnexion avec la nature — tout suivi par des capteurs IoT ESP32.</p>
+        <div class="feat">
+          <div class="feat-item"><div class="feat-dot">🎯</div><div class="feat-txt"><strong style="color:#fff">Vision</strong> — Devenir le centre de référence au Maghreb.</div></div>
+          <div class="feat-item"><div class="feat-dot">💚</div><div class="feat-txt"><strong style="color:#fff">Mission</strong> — Offrir un parcours médical, psychologique, sportif et écologique intégré.</div></div>
+          <div class="feat-item"><div class="feat-dot">⭐</div><div class="feat-txt"><strong style="color:#fff">Valeurs</strong> — Dignité, bienveillance, innovation, durabilité.</div></div>
+        </div>
+      </div>
+      <div class="iblock-img">🌿</div>
+    </div>
+
+    <div class="iblock rev">
+      <div>
+        <p class="stag">Technologie</p>
+        <h2>Suivi intelligent par IoT</h2>
+        <p>Une infrastructure connectée complète pour personnaliser chaque parcours en temps réel.</p>
+        <div class="feat">
+          <div class="feat-item"><div class="feat-dot">🔌</div><div class="feat-txt"><strong style="color:#fff">ESP32</strong> — Capteurs : rythme cardiaque, température, activité physique.</div></div>
+          <div class="feat-item"><div class="feat-dot">☁️</div><div class="feat-txt"><strong style="color:#fff">Cloud</strong> — Base de données sécurisée, chiffrement AES-256.</div></div>
+          <div class="feat-item"><div class="feat-dot">📱</div><div class="feat-txt"><strong style="color:#fff">App mobile</strong> — Interface pour résidents, soignants et familles.</div></div>
+          <div class="feat-item"><div class="feat-dot">🧠</div><div class="feat-txt"><strong style="color:#fff">IA prédictive</strong> — Détection des risques de rechute, adaptation des protocoles.</div></div>
+        </div>
+      </div>
+      <div class="iblock-img">📱</div>
+    </div>
+
+    <div>
+      <p class="stag">Contact</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:8px">Nous contacter</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.8">Notre équipe est disponible du lundi au vendredi de 8h à 17h.</p>
+      <div class="contact-grid">
+        <div class="contact-item"><div class="ci-icon">✉️</div><div><div class="ci-label">Email</div><div class="ci-val">contact@smartrehabgreen.tn</div></div></div>
+        <div class="contact-item"><div class="ci-icon">📞</div><div><div class="ci-label">Téléphone</div><div class="ci-val">+216 71 XXX XXX</div></div></div>
+        <div class="contact-item"><div class="ci-icon">📍</div><div><div class="ci-label">Adresse</div><div class="ci-val">Tunisie — Région à définir</div></div></div>
+        <div class="contact-item"><div class="ci-icon">🕐</div><div><div class="ci-label">Horaires</div><div class="ci-val">Lun – Ven, 8h00 – 17h00</div></div></div>
+      </div>
+      <div style="margin-top:28px;text-align:center">
+        <button class="btn-hero btn-hero-green" onclick="show('signup')">Faire une demande →</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-brand"><strong>Smart Rehab</strong> &amp; Green Center</div>
+    <div class="footer-links"><button onclick="show('home')">Accueil</button><button onclick="show('info')">Informations</button><button onclick="show('signup')">S'inscrire</button><button onclick="show('login')">Connexion</button></div>
+    <div class="footer-copy">© 2025 Smart Rehab & Green Center.</div>
+  </footer>
+</div>
+
+<!-- ═══════════ PAGE LOGIN ═══════════ -->
+<div id="login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div>
+        <div class="logo" style="margin-bottom:44px" onclick="show('home')">
+          <div class="logo-icon">🌿</div>
+          <div class="logo-txt">Smart Rehab<br><span>&amp; Green Center</span></div>
+        </div>
+        <div class="auth-quote">"Chaque jeune mérite une nouvelle chance."</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.45);margin-top:12px;margin-bottom:36px">Accès réservé au personnel autorisé du centre.</p>
+      </div>
+      <div class="mini-stats">
+        <div class="ms"><div class="ms-n">200+</div><div class="ms-l">Bénéficiaires</div></div>
+        <div class="ms"><div class="ms-n">80%</div><div class="ms-l">Réintégration</div></div>
+        <div class="ms"><div class="ms-n">4</div><div class="ms-l">Piliers</div></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-inner" id="loginInner">
+        <h2 class="auth-title">Connexion</h2>
+        <p class="auth-desc">Accédez à votre espace professionnel</p>
+        <div id="loginErr" class="alert-err"></div>
+        <div class="fld"><label class="flabel">Email</label><input id="lemail" class="finput" type="email" placeholder="vous@smartrehab.tn"></div>
+        <div class="fld"><label class="flabel">Mot de passe</label><input id="lpw" class="finput" type="password" placeholder="••••••••"></div>
+        <button class="btn-submit" onclick="doLogin()">Se connecter →</button>
+        <div class="divider"><hr><span>ou</span><hr></div>
+        <button class="btn-sec" onclick="show('signup')">Créer un compte / S'inscrire</button>
+        <div class="demo-box">
+          <div class="demo-title">Comptes de démonstration</div>
+          <div class="demo-row">admin@smartrehab.tn <strong>admin123</strong></div>
+          <div class="demo-row">khelil@smartrehab.tn <strong>medecin123</strong></div>
+          <div class="demo-row">trabelsi@smartrehab.tn <strong>psych123</strong></div>
+          <div class="demo-row">bouzid@smartrehab.tn <strong>form123</strong></div>
+        </div>
+        <p style="margin-top:14px;text-align:center;font-size:12px;color:rgba(255,255,255,.25)">
+          <button onclick="show('info')" style="background:none;border:none;color:rgba(116,198,157,.45);font-size:12px;cursor:pointer">En savoir plus sur le centre</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE SIGNUP ═══════════ -->
+<div id="signup" class="page">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div>
+        <div class="logo" style="margin-bottom:44px;cursor:pointer" onclick="show('home')">
+          <div class="logo-icon">🌿</div>
+          <div class="logo-txt">Smart Rehab<br><span>&amp; Green Center</span></div>
+        </div>
+        <div class="auth-quote">Un nouveau départ <span style="color:#74C69D">commence ici.</span></div>
+        <p style="font-size:13px;color:rgba(255,255,255,.45);margin-top:12px;margin-bottom:32px">Rejoignez notre centre innovant.</p>
+        <div class="feat">
+          <div class="feat-item"><div class="feat-dot">🩺</div><div class="feat-txt">Équipe pluridisciplinaire</div></div>
+          <div class="feat-item"><div class="feat-dot">🌿</div><div class="feat-txt">Espace vert thérapeutique</div></div>
+          <div class="feat-item"><div class="feat-dot">💪</div><div class="feat-txt">Sport & bien-être</div></div>
+          <div class="feat-item"><div class="feat-dot">🎓</div><div class="feat-txt">Formations certifiées</div></div>
+          <div class="feat-item"><div class="feat-dot">📱</div><div class="feat-txt">Suivi IoT personnalisé</div></div>
+        </div>
+      </div>
+      <button onclick="show('info')" style="background:none;border:none;color:rgba(116,198,157,.4);font-size:12px;cursor:pointer;text-align:left">En savoir plus sur le centre →</button>
+    </div>
+    <div class="auth-right" style="align-items:flex-start;padding-top:60px;overflow-y:auto">
+      <div class="auth-inner" id="signupInner"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── NAVIGATION ─────────────────────────────────────────────── */
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='signup') initSignup();
+}
+
+/* ── LOGIN ──────────────────────────────────────────────────── */
+const ACCOUNTS=[
+  {email:'admin@smartrehab.tn',    pw:'admin123',   name:'Admin Centre',       role:'admin'},
+  {email:'khelil@smartrehab.tn',   pw:'medecin123', name:'Dr. Sami Khelil',    role:'Médecin'},
+  {email:'trabelsi@smartrehab.tn', pw:'psych123',   name:'Mme. Ines Trabelsi', role:'Psychologue'},
+  {email:'bouzid@smartrehab.tn',   pw:'form123',    name:'M. Yassine Bouzid',  role:'Formateur'},
+  {email:'salem@smartrehab.tn',    pw:'coach123',   name:'Coach Maher Salem',  role:'Coach'},
+  {email:'sfaxi@smartrehab.tn',    pw:'infirm123',  name:'Mme. Fatma Sfaxi',   role:'Infirmier'},
+];
+
+function doLogin(){
+  const email=document.getElementById('lemail').value.trim().toLowerCase();
+  const pw=document.getElementById('lpw').value;
+  const errEl=document.getElementById('loginErr');
+  errEl.style.display='none';
+  if(!email||!pw){errEl.textContent='Veuillez remplir tous les champs.';errEl.style.display='block';return;}
+  const u=ACCOUNTS.find(a=>a.email===email&&a.pw===pw);
+  if(u){showLoginSuccess(u);}
+  else{errEl.textContent='Email ou mot de passe incorrect.';errEl.style.display='block';}
+}
+
+function showLoginSuccess(u){
+  document.getElementById('loginInner').innerHTML=`
+    <div class="success-screen">
+      <div class="suc-icon">✓</div>
+      <h2 class="auth-title">Bienvenue, ${u.name} !</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.5);margin:10px 0 22px;line-height:1.7">
+        Connecté en tant que <strong style="color:#74C69D">${u.role}</strong>.<br>
+        Pour accéder au tableau de bord complet, démarrez l'application :
+      </p>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(116,198,157,.15);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left">
+        <div style="font-size:10px;color:#74C69D;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Démarrer l'application</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:2">
+          <span style="color:rgba(255,255,255,.3)">Terminal 1 (backend) :</span><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">cd rehab\\backend</code><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">pip install flask flask-cors</code><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">python seed.py</code><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">python server.py</code><br><br>
+          <span style="color:rgba(255,255,255,.3)">Terminal 2 (frontend) :</span><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">cd rehab\\frontend</code><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">npm install</code><br>
+          <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px">npm run dev</code>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="resetLogin()">← Retour connexion</button>
+    </div>`;
+}
+
+function resetLogin(){
+  document.getElementById('loginInner').innerHTML=`
+    <h2 class="auth-title">Connexion</h2>
+    <p class="auth-desc">Accédez à votre espace professionnel</p>
+    <div id="loginErr" class="alert-err"></div>
+    <div class="fld"><label class="flabel">Email</label><input id="lemail" class="finput" type="email" placeholder="vous@smartrehab.tn"></div>
+    <div class="fld"><label class="flabel">Mot de passe</label><input id="lpw" class="finput" type="password" placeholder="••••••••"></div>
+    <button class="btn-submit" onclick="doLogin()">Se connecter →</button>
+    <div class="divider"><hr><span>ou</span><hr></div>
+    <button class="btn-sec" onclick="show('signup')">Créer un compte / S'inscrire</button>
+    <div class="demo-box">
+      <div class="demo-title">Comptes de démonstration</div>
+      <div class="demo-row">admin@smartrehab.tn <strong>admin123</strong></div>
+      <div class="demo-row">khelil@smartrehab.tn <strong>medecin123</strong></div>
+      <div class="demo-row">trabelsi@smartrehab.tn <strong>psych123</strong></div>
+    </div>`;
+}
+
+/* ── SIGNUP WIZARD ──────────────────────────────────────────── */
+const SW={step:0,type:'',f:{prenom:'',nom:'',email:'',tel:'',age:'',role:'',sit:'',urg:'non',msg:''},err:{}};
+const ROLES=[{v:'medecin',l:'Médecin psychiatre'},{v:'psychologue',l:'Psychologue clinicien(ne)'},{v:'infirmier',l:'Infirmier(ère)'},{v:'coach',l:'Coach sportif'},{v:'formateur',l:'Formateur / Formatrice'},{v:'admin',l:'Administrateur'}];
+const SITS=[{v:'cannabis',l:'Cannabis / résine'},{v:'alcool',l:'Alcool'},{v:'medicaments',l:'Médicaments détournés'},{v:'cocaine',l:'Cocaïne / crack'},{v:'opioides',l:'Opioïdes / héroïne'},{v:'polyconsom',l:'Polyconsommation'},{v:'autre',l:'Autre / Je préfère ne pas préciser'}];
+
+function initSignup(){SW.step=0;SW.type='';SW.f={prenom:'',nom:'',email:'',tel:'',age:'',role:'',sit:'',urg:'non',msg:''};SW.err={};renderSW();}
+
+function renderSW(){
+  const el=document.getElementById('signupInner');
+  if(SW.step===0){el.innerHTML=step0();return;}
+  let h=`<div class="steps">`;
+  [1,2,3].forEach((n,i)=>{
+    const done=SW.step>n,active=SW.step===n;
+    h+=`<div class="sdot" style="background:${done?'#40916C':active?'rgba(116,198,157,.15)':'rgba(255,255,255,.05)'};border:2px solid ${done?'#40916C':active?'#74C69D':'rgba(255,255,255,.1)'};color:${done?'#fff':active?'#74C69D':'rgba(255,255,255,.25)'}">${done?'✓':n}</div>`;
+    if(i<2)h+=`<div class="sline" style="background:${SW.step>n?'#40916C':'rgba(255,255,255,.1)'}"></div>`;
+  });
+  h+=`<span style="margin-left:14px;font-size:12px;color:rgba(255,255,255,.35)">Étape ${SW.step}/3</span></div>`;
+  if(SW.step===1)h+=step1();
+  else if(SW.step===2)h+=step2();
+  else if(SW.step===3)h+=step3();
+  el.innerHTML=h;
+  // Attach input events
+  el.querySelectorAll('[data-k]').forEach(inp=>{
+    const k=inp.dataset.k;
+    if(SW.f[k]!==undefined)inp.value=SW.f[k]||'';
+    inp.addEventListener('input',()=>{SW.f[k]=inp.value;});
+    inp.addEventListener('focus',()=>{inp.style.borderColor='#74C69D';inp.style.background='rgba(116,198,157,.08)';});
+    inp.addEventListener('blur',()=>{inp.style.borderColor='rgba(116,198,157,.2)';inp.style.background='rgba(255,255,255,.07)';});
+  });
+}
+
+function ferr(k){return SW.err[k]?`<div class="ferr">⚠ ${SW.err[k]}</div>`:''}
+
+function step0(){return`
+  <h2 class="auth-title" style="margin-bottom:8px">Créer un compte</h2>
+  <p class="auth-desc">Choisissez votre profil pour commencer</p>
+  <div class="type-btns">
+    <button class="tbtn" onclick="SW.type='resident';SW.step=1;renderSW()">
+      <span class="tbtn-icon">🏥</span>
+      <div><div class="tbtn-title">Je cherche de l'aide</div><div class="tbtn-desc">Programme de réhabilitation, sevrage ou soutien psychologique.</div></div>
+    </button>
+    <button class="tbtn" onclick="SW.type='staff';SW.step=1;renderSW()">
+      <span class="tbtn-icon">👔</span>
+      <div><div class="tbtn-title">Je suis professionnel(le)</div><div class="tbtn-desc">Rejoindre notre équipe médicale, sportive ou pédagogique.</div></div>
+    </button>
+  </div>
+  <p style="text-align:center;font-size:12px;color:rgba(255,255,255,.3);margin-top:16px">Déjà inscrit ? <button onclick="show('login')" style="color:#74C69D;background:none;border:none;cursor:pointer;font-size:12px">Connexion →</button></p>`;}
+
+function step1(){return`
+  <h2 class="auth-title" style="font-size:20px;margin-bottom:4px">Informations personnelles</h2>
+  <p class="auth-desc" style="font-size:12px;margin-bottom:20px">🔒 Données strictement confidentielles</p>
+  <div class="grid-2-form" style="margin-bottom:12px">
+    <div class="fld"><label class="flabel">Prénom *</label><input class="finput" data-k="prenom" placeholder="Votre prénom">${ferr('prenom')}</div>
+    <div class="fld"><label class="flabel">Nom *</label><input class="finput" data-k="nom" placeholder="Votre nom">${ferr('nom')}</div>
+  </div>
+  <div class="fld" style="margin-bottom:12px"><label class="flabel">Email *</label><input class="finput" data-k="email" type="email" placeholder="vous@email.com">${ferr('email')}</div>
+  <div class="grid-2-form">
+    <div class="fld"><label class="flabel">Téléphone</label><input class="finput" data-k="tel" placeholder="+216 XX XXX XXX"></div>
+    <div class="fld"><label class="flabel">Âge</label><input class="finput" data-k="age" type="number" min="14" max="80" placeholder="Votre âge">${ferr('age')}</div>
+  </div>
+  <div class="nav-btns"><button class="btn-back" onclick="SW.step=0;renderSW()">← Retour</button><button class="btn-next" onclick="val1()">Continuer →</button></div>`;}
+
+function step2(){
+  if(SW.type==='staff'){return`
+    <h2 class="auth-title" style="font-size:20px;margin-bottom:4px">Votre profil professionnel</h2>
+    <p class="auth-desc" style="font-size:12px;margin-bottom:16px">Quel poste souhaitez-vous occuper ?</p>
+    <div class="fld" style="margin-bottom:12px"><label class="flabel">Poste souhaité *</label>
+    <div class="role-list">${ROLES.map(r=>`<button class="rbtn${SW.f.role===r.v?' sel':''}" onclick="SW.f.role='${r.v}';renderSW()"><div class="rradio${SW.f.role===r.v?' chk':''}">${SW.f.role===r.v?'<div class="rrinner"></div>':''}</div><span class="rlabel">${r.l}</span></button>`).join('')}</div>${ferr('role')}</div>
+    <div class="fld"><label class="flabel">Message / Expériences</label><textarea class="finput" data-k="msg" rows="3" placeholder="Vos années d'expérience, certifications…" style="resize:vertical;line-height:1.6"></textarea></div>
+    <div class="nav-btns"><button class="btn-back" onclick="SW.step=1;renderSW()">← Retour</button><button class="btn-next" onclick="val2()">Continuer →</button></div>`;}
+  return`
+    <h2 class="auth-title" style="font-size:20px;margin-bottom:4px">Votre situation</h2>
+    <p class="auth-desc" style="font-size:12px;margin-bottom:16px">Ces informations aident notre équipe à préparer votre accueil.</p>
+    <div class="fld" style="margin-bottom:12px"><label class="flabel">Quelle substance ? *</label>
+    <div class="sit-grid">${SITS.map(s=>`<button class="sbtn${SW.f.sit===s.v?' sel':''}" onclick="SW.f.sit='${s.v}';renderSW()">${s.l}</button>`).join('')}</div>${ferr('sit')}</div>
+    <div class="fld" style="margin-bottom:12px"><label class="flabel">Situation urgente ?</label>
+    <div class="urgrow"><button class="ubtn uy${SW.f.urg==='oui'?' sel':''}" onclick="SW.f.urg='oui';renderSW()">⚠️ Oui, urgent</button><button class="ubtn un${SW.f.urg==='non'?' sel':''}" onclick="SW.f.urg='non';renderSW()">✓ Non urgent</button></div></div>
+    <div class="fld"><label class="flabel">Message (facultatif)</label><textarea class="finput" data-k="msg" rows="3" placeholder="Partagez ce que vous souhaitez nous dire…" style="resize:vertical;line-height:1.6"></textarea></div>
+    <div class="nav-btns"><button class="btn-back" onclick="SW.step=1;renderSW()">← Retour</button><button class="btn-next" onclick="val2()">Continuer →</button></div>`;}
+
+function step3(){
+  const si=SW.type==='staff'?ROLES.find(r=>r.v===SW.f.role)?.l||'—':SITS.find(s=>s.v===SW.f.sit)?.l||'—';
+  const rows=[['Email',SW.f.email],['Téléphone',SW.f.tel||'—'],['Âge',SW.f.age?SW.f.age+' ans':'—'],[SW.type==='staff'?'Poste':'Situation',si]];
+  if(SW.type==='resident')rows.push(['Urgence',SW.f.urg==='oui'?'⚠️ Urgent':'Non urgent']);
+  return`
+    <h2 class="auth-title" style="font-size:20px;margin-bottom:4px">Confirmation</h2>
+    <p class="auth-desc" style="font-size:12px;margin-bottom:16px">Vérifiez vos informations avant d'envoyer.</p>
+    <div class="summary-box">
+      <div class="s-header">
+        <div class="s-av">${(SW.f.prenom.charAt(0)||'?')}${(SW.f.nom.charAt(0)||'?')}</div>
+        <div><div class="s-name">${SW.f.prenom} ${SW.f.nom}</div><div class="s-type">${SW.type==='resident'?'🏥 Demande d\'admission':'👔 Candidature professionnelle'}</div></div>
+      </div>
+      ${rows.map(([k,v])=>`<div class="s-row"><span class="s-key">${k}</span><span class="s-val">${v}</span></div>`).join('')}
+    </div>
+    <label class="chk-label"><input type="checkbox" id="swChk"><span class="chk-txt">J'accepte que mes informations soient utilisées par le Smart Rehab & Green Center. Données <strong style="color:rgba(255,255,255,.7)">strictement confidentielles</strong>.</span></label>
+    <div id="swErr" class="alert-err" style="margin-top:8px"></div>
+    <div class="nav-btns"><button class="btn-back" onclick="SW.step=2;renderSW()">← Retour</button><button class="btn-next" id="swSubmit" onclick="submitSW()">✓ Envoyer ma demande</button></div>`;}
+
+function val1(){
+  const e={};
+  if(!SW.f.prenom.trim())e.prenom='Requis';
+  if(!SW.f.nom.trim())e.nom='Requis';
+  if(!SW.f.email.trim()||!/\S+@\S+\.\S+/.test(SW.f.email))e.email='Email invalide';
+  if(SW.f.age&&(Number(SW.f.age)<14||Number(SW.f.age)>80))e.age='Âge entre 14 et 80';
+  SW.err=e;
+  if(!Object.keys(e).length){SW.step=2;renderSW();}else renderSW();
+}
+
+function val2(){
+  const e={};
+  if(SW.type==='staff'&&!SW.f.role)e.role='Choisissez un rôle';
+  if(SW.type==='resident'&&!SW.f.sit)e.sit='Choisissez votre situation';
+  SW.err=e;
+  if(!Object.keys(e).length){SW.step=3;renderSW();}else renderSW();
+}
+
+async function submitSW(){
+  const chk=document.getElementById('swChk')?.checked;
+  const errEl=document.getElementById('swErr');
+  if(!chk){errEl.textContent='⚠ Vous devez accepter les conditions de confidentialité.';errEl.style.display='block';return;}
+  const btn=document.getElementById('swSubmit');
+  btn.disabled=true;btn.textContent='⏳ Envoi en cours…';
+  try{
+    await fetch('/api/registrations',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({nom:SW.f.nom,prenom:SW.f.prenom,email:SW.f.email.toLowerCase(),telephone:SW.f.tel,age:SW.f.age?Number(SW.f.age):null,type:SW.type,role:SW.f.role,situation:SW.f.sit,message:(SW.f.urg==='oui'?'[URGENT] ':'')+SW.f.msg})
+    });
+  }catch(e){/* demo mode if no backend */}
+  document.getElementById('signupInner').innerHTML=`
+    <div class="success-screen">
+      <div class="suc-icon">✓</div>
+      <h2 class="auth-title">Demande envoyée !</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.5);margin:10px 0 24px;line-height:1.8">
+        Merci <strong style="color:#74C69D">${SW.f.prenom}</strong> !<br>
+        Notre équipe vous contactera à <strong style="color:#74C69D">${SW.f.email}</strong> dans les <strong>48 heures</strong>.
+      </p>
+      <button class="btn-submit" onclick="show('home')">Retour à l'accueil</button>
+      <div style="margin-top:10px;text-align:center"><button onclick="show('login')" style="background:none;border:none;color:#74C69D;font-size:13px;cursor:pointer">Se connecter →</button></div>
+    </div>`;
+}
+
+// Init
+initSignup();
+</script>
+</body>
+</html>
