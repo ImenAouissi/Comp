@@ -21,7 +21,7 @@ def seed():
         # First connect without database to create it
         conn = pymysql.connect(
             host='localhost', port=3306,
-            user='root', password='root',
+            user='root', password='',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -42,7 +42,7 @@ def seed():
     # ── Connect to smartrehab database ────────────────────────────────────
     conn = pymysql.connect(
         host='localhost', port=3306,
-        user='root', password='root',
+        user='root', password='',
         database='smartrehab',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor

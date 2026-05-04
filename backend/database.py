@@ -6,7 +6,7 @@ import os, pymysql, pymysql.cursors
 
 DB_CONFIG = {
     'host': 'localhost', 'port': 3306,
-    'user': 'root',      'password': 'root',
+    'user': 'root',      'password': '',
     'database':    'smartrehab',
     'charset':     'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor,
